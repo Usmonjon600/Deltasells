@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="uz" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delta Sells — CRM / Kassa</title>
+  <meta name="description" content="Delta Sells – Kichik biznes uchun CRM va Kassa tizimi" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            brand: {
+              50:  '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe',
+              300: '#a5b4fc', 400: '#818cf8', 500: '#6366f1',
+              600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81',
+            },
+            surface:  { DEFAULT: '#0f172a', light: '#1e293b', lighter: '#334155' },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    /* ---------- scrollbar ---------- */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #475569; border-radius: 999px; }
+    /* ---------- transitions ---------- */
+    .fade-in { animation: fadeIn .25s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .card-hover { transition: transform .15s, box-shadow .15s; }
+    .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99,102,241,.18); }
+    /* ---------- toast ---------- */
+    #toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 100;
+      padding: .75rem 1.25rem; border-radius: .75rem; font-weight: 600;
+      color: #fff; opacity: 0; pointer-events: none;
+      transition: opacity .3s, transform .3s; transform: translateY(8px);
+    }
+    #toast.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    #toast.success { background: linear-gradient(135deg,#10b981,#059669); }
+    #toast.error   { background: linear-gradient(135deg,#ef4444,#dc2626); }
+    /* ---------- modal backdrop ---------- */
+    .modal-bg {
+      position: fixed; inset: 0; z-index: 50;
+      background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* pulse animation for stats */
+    .pulse-once { animation: pulse-once .6s ease-out; }
+    @keyframes pulse-once { 0% { transform: scale(.95); opacity:.6; } 100% { transform: scale(1); opacity:1; } }
+    /* active tab indicator */
+    .tab-btn { position: relative; transition: color .2s; }
+    .tab-btn.active::after {
+      content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+      height: 3px; border-radius: 999px;
+      background: linear-gradient(90deg,#818cf8,#6366f1);
+    }
+    /* input style */
+    input, select { transition: border-color .2s, box-shadow .2s; }
+    input:focus, select:focus {
+      border-color: #818cf8 !important;
+      box-shadow: 0 0 0 3px rgba(129,140,248,.25);
+    }
+  </style>
+</head>
+
+<body class="bg-surface text-slate-100 h-full flex flex-col overflow-hidden">
+
+  <!-- ========== HEADER ========== -->
+  <header class="flex items-center justify-between px-6 py-3 bg-surface-light border-b border-slate-700/60 shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-brand-500/30">D</div>
+      <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-brand-300 to-brand-500 bg-clip-text text-transparent">Delta Sells</h1>
+    </div>
+    <nav class="flex gap-1 bg-surface rounded-xl p-1">
+      <button id="tabKassa" onclick="switchTab('kassa')" class="tab-btn active px-5 py-2 rounded-lg text-sm font-semibold text-slate-100">🛒 Kassa</button>
+      <button id="tabAdmin" onclick="switchTab('admin')" class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-slate-100">⚙️ Admin</button>
+      <button id="tabReports" onclick="switchTab('reports')" class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-slate-100">📅 Hisobotlar</button>
+    </nav>
+    <div class="text-xs text-slate-500" id="headerClock"></div>
+  </header>
+
+  <!-- ========== TOAST ========== -->
+  <div id="toast"></div>
+
+  <!-- ============================================================ -->
+  <!--                      KASSA PANELI                            -->
+  <!-- ============================================================ -->
+  <main id="kassaView" class="flex-1 flex overflow-hidden fade-in">
+
+    <!-- LEFT: Product search & grid -->
+    <section class="w-[58%] flex flex-col border-r border-slate-700/40 p-5 gap-4 overflow-hidden">
+      <div class="relative">
+        <input id="kassaSearch" type="text" placeholder="Mahsulot nomi yoki shtrix-kod..." oninput="searchKassa()"
+          class="w-full bg-surface-light border border-slate-600 rounded-xl px-4 py-3 pl-11 text-sm placeholder-slate-500 outline-none" />
+        <svg class="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      </div>
+      <div id="kassaProducts" class="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 pr-1"></div>
+    </section>
+
+    <!-- RIGHT: Cart -->
+    <section class="w-[42%] flex flex-col p-5 gap-4 overflow-hidden">
+      <h2 class="text-base font-bold text-slate-300 flex items-center gap-2">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-brand-600/20 text-brand-400 text-sm">🛒</span>
+        Savat
+        <span id="cartCount" class="ml-auto text-xs bg-brand-600/30 text-brand-300 px-2 py-0.5 rounded-full">0</span>
+      </h2>
+
+      <div id="cartItems" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+
+      <!-- Cart summary -->
+      <div class="border-t border-slate-700/60 pt-4 space-y-3">
+        <div class="flex flex-col gap-1">
+          <label for="saleDateTime" class="text-xs text-slate-400">Savdo vaqti:</label>
+          <input type="datetime-local" id="saleDateTime" class="w-full bg-surface-light border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none" />
+        </div>
+        <div class="flex justify-between text-sm text-slate-400">
+          <span>Jami:</span>
+          <span id="cartTotal" class="text-xl font-extrabold text-slate-100">0 soʻm</span>
+        </div>
+        <button onclick="submitSale()"
+          class="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white shadow-lg shadow-emerald-600/25 transition-all active:scale-[.97]">
+          ✅  Sotish
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================ -->
+  <!--                      ADMIN PANELI                            -->
+  <!-- ============================================================ -->
+  <main id="adminView" class="flex-1 flex flex-col overflow-hidden hidden fade-in">
+
+    <!-- Dashboard cards -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 pb-0 shrink-0">
+      <div class="bg-surface-light rounded-2xl p-4 border border-slate-700/40 card-hover">
+        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Bugungi tushum</p>
+        <p id="statTodayRev" class="text-xl font-extrabold text-emerald-400 pulse-once">0</p>
+      </div>
+      <div class="bg-surface-light rounded-2xl p-4 border border-slate-700/40 card-hover">
+        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Bugungi foyda</p>
+        <p id="statTodayProf" class="text-xl font-extrabold text-sky-400 pulse-once">0</p>
+      </div>
+      <div class="bg-surface-light rounded-2xl p-4 border border-slate-700/40 card-hover">
+        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Oylik tushum</p>
+        <p id="statMonthRev" class="text-xl font-extrabold text-amber-400 pulse-once">0</p>
+      </div>
+      <div class="bg-surface-light rounded-2xl p-4 border border-slate-700/40 card-hover">
+        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Oylik foyda</p>
+        <p id="statMonthProf" class="text-xl font-extrabold text-purple-400 pulse-once">0</p>
+      </div>
+    </section>
+
+    <!-- Bottom split layout -->
+    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden gap-4 p-5 pt-0">
+      
+      <!-- Products management -->
+      <section class="flex-1 flex flex-col overflow-hidden gap-4 bg-surface-light border border-slate-700/40 rounded-2xl p-5">
+        <div class="flex items-center justify-between">
+          <h2 class="text-base font-bold text-slate-300">📦 Mahsulotlar</h2>
+          <button onclick="openProductModal()"
+            class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white transition-colors shadow-md shadow-brand-700/30">
+            + Yangi mahsulot
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-auto rounded-xl border border-slate-700/40">
+          <table class="w-full text-sm">
+            <thead class="bg-surface-lighter/60 text-slate-400 text-[11px] uppercase tracking-wider sticky top-0 z-10">
+              <tr>
+                <th class="text-left px-4 py-3">#</th>
+                <th class="text-left px-4 py-3">Nomi</th>
+                <th class="text-right px-4 py-3">Narxi</th>
+                <th class="text-right px-4 py-3">Tannarxi</th>
+                <th class="text-right px-4 py-3">Qoldiq</th>
+                <th class="text-left px-4 py-3">Shtrix-kod</th>
+                <th class="text-center px-4 py-3">Amallar</th>
+              </tr>
+            </thead>
+            <tbody id="adminProductsBody" class="divide-y divide-slate-700/30"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Smart Insights -->
+      <section class="w-full lg:w-[380px] xl:w-[440px] flex flex-col overflow-hidden gap-4 bg-surface-light border border-slate-700/40 rounded-2xl p-5">
+        <div class="flex items-center justify-between">
+          <h2 class="text-base font-bold text-slate-300 flex items-center gap-2">
+            <span>🧠</span> Bildirishnomalar va Tavsiyalar
+          </h2>
+          <button onclick="sendTelegramTest()" title="Telegramga yuborish"
+            class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-sky-600 hover:bg-sky-500 text-white transition-colors shadow-sm flex items-center gap-1 active:scale-95">
+            ✈️ Yuborish
+          </button>
+        </div>
+        <div id="insightsContainer" class="flex-1 overflow-y-auto space-y-4 pr-1">
+          <div class="flex items-center justify-center h-32 text-slate-500 text-xs">
+            Tahlil qilinmoqda...
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ============================================================ -->
+  <!--                    REPORTS PANELI                            -->
+  <!-- ============================================================ -->
+  <main id="reportsView" class="flex-1 flex flex-col overflow-hidden hidden fade-in">
+    <section class="p-5 border-b border-slate-700/40 flex items-center justify-between shrink-0">
+      <h2 class="text-xl font-bold text-slate-100">📅 Hisobotlar (Kalendar)</h2>
+      <div class="flex items-center gap-4">
+        <button onclick="changeMonth(-1)" class="px-4 py-2 bg-surface border border-slate-600 rounded-xl hover:bg-slate-800 transition-colors">◀ Oldingi</button>
+        <div id="calendarMonthYear" class="text-lg font-bold min-w-[120px] text-center text-brand-300"></div>
+        <button onclick="changeMonth(1)" class="px-4 py-2 bg-surface border border-slate-600 rounded-xl hover:bg-slate-800 transition-colors">Keyingi ▶</button>
+      </div>
+    </section>
+    
+    <section class="flex-1 p-5 overflow-auto bg-surface-light">
+      <div class="grid grid-cols-7 gap-3 text-center font-bold text-slate-400 mb-3 uppercase text-xs">
+        <div>Du</div><div>Se</div><div>Ch</div><div>Pa</div><div>Ju</div><div>Sh</div><div>Ya</div>
+      </div>
+      <div id="calendarGrid" class="grid grid-cols-7 gap-3"></div>
+    </section>
+  </main>
+
+  <!-- ============================================================ -->
+  <!--              PRODUCT ADD / EDIT MODAL                        -->
+  <!-- ============================================================ -->
+  <div id="productModal" class="modal-bg hidden" onclick="if(event.target===this)closeProductModal()">
+    <div class="bg-surface-light rounded-2xl w-full max-w-md p-6 space-y-5 border border-slate-700/50 shadow-2xl fade-in">
+      <h3 id="modalTitle" class="text-lg font-bold text-slate-100">Yangi mahsulot</h3>
+      <form id="productForm" onsubmit="saveProduct(event)" class="space-y-4">
+        <input type="hidden" id="pf_id" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Nomi *</label>
+          <input id="pf_name" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none" />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Sotish narxi *</label>
+            <input id="pf_price" type="number" step="any" min="0" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Tannarxi *</label>
+            <input id="pf_cost" type="number" step="any" min="0" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Ombor qoldig'i</label>
+            <input id="pf_stock" type="number" min="0" value="0" class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Shtrix-kod</label>
+            <input id="pf_barcode" class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none" />
+          </div>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-brand-600 hover:bg-brand-500 text-white transition-colors">💾 Saqlash</button>
+          <button type="button" onclick="closeProductModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors">Bekor qilish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--              DAILY SALES MODAL                               -->
+  <!-- ============================================================ -->
+  <div id="dailySalesModal" class="modal-bg hidden" onclick="if(event.target===this)closeDailySalesModal()">
+    <div class="bg-surface-light rounded-2xl w-full max-w-3xl p-6 space-y-5 border border-slate-700/50 shadow-2xl fade-in flex flex-col max-h-[80vh]">
+      <div class="flex justify-between items-center">
+        <h3 id="dailySalesTitle" class="text-xl font-bold text-slate-100"></h3>
+        <button onclick="closeDailySalesModal()" class="text-slate-400 hover:text-white text-2xl leading-none">&times;</button>
+      </div>
+      <div class="flex-1 overflow-auto rounded-xl border border-slate-700/40 bg-surface">
+        <table class="w-full text-sm">
+          <thead class="bg-surface-lighter/60 text-slate-400 text-[11px] uppercase tracking-wider sticky top-0 z-10">
+            <tr>
+              <th class="text-left px-4 py-3">Vaqti</th>
+              <th class="text-left px-4 py-3">Mahsulotlar</th>
+              <th class="text-right px-4 py-3">Tushum</th>
+              <th class="text-right px-4 py-3">Foyda</th>
+            </tr>
+          </thead>
+          <tbody id="dailySalesBody" class="divide-y divide-slate-700/30"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--                        JAVASCRIPT                            -->
+  <!-- ============================================================ -->
+  <script>
+  /* ------------------------------------------------------------------ */
+  /*  STATE                                                             */
+  /* ------------------------------------------------------------------ */
+  let allProducts = [];
+  let cart = [];           // { product, quantity }
+
+  /* ------------------------------------------------------------------ */
+  /*  HELPERS                                                           */
+  /* ------------------------------------------------------------------ */
+  const $ = (id) => document.getElementById(id);
+  const fmt = (n) => Number(n).toLocaleString('uz-UZ') + ' soʻm';
+
+  function toast(msg, type = 'success') {
+    const t = $('toast');
+    t.textContent = msg;
+    t.className = 'show ' + type;
+    setTimeout(() => t.className = '', 2500);
+  }
+
+  async function api(path, opts = {}) {
+    try {
+      const res = await fetch(path, opts);
+      let data;
+      const text = await res.text();
+      try { data = JSON.parse(text); } catch { data = null; }
+      if (!res.ok) throw new Error(data?.detail || `Server xatoligi (${res.status})`);
+      return data;
+    } catch (e) {
+      toast(e.message, 'error');
+      throw e;
+    }
+  }
+
+  /* Clock */
+  function tickClock() {
+    const now = new Date();
+    $('headerClock').textContent = now.toLocaleString('uz-UZ', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+    });
+  }
+  setInterval(tickClock, 1000);
+  tickClock();
+
+  /* ------------------------------------------------------------------ */
+  /*  TABS                                                              */
+  /* ------------------------------------------------------------------ */
+  function switchTab(tab) {
+    const views = ['kassa', 'admin', 'reports'];
+    views.forEach(v => {
+      $(`${v}View`).classList.toggle('hidden', tab !== v);
+      const btn = $(`tab${v.charAt(0).toUpperCase() + v.slice(1)}`);
+      btn.classList.toggle('active', tab === v);
+      btn.classList.toggle('text-slate-100', tab === v);
+      btn.classList.toggle('text-slate-400', tab !== v);
+    });
+
+    if (tab === 'kassa') loadProducts();
+    else if (tab === 'admin') { loadAdminProducts(); loadDashboard(); loadInsights(); }
+    else if (tab === 'reports') { initCalendar(); }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  PRODUCTS – LOAD                                                   */
+  /* ------------------------------------------------------------------ */
+  async function loadProducts(q = '') {
+    const url = q ? `/api/products?q=${encodeURIComponent(q)}` : '/api/products';
+    allProducts = await api(url);
+    renderKassaProducts();
+  }
+
+  function searchKassa() {
+    const q = $('kassaSearch').value.trim();
+    loadProducts(q);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  KASSA – PRODUCT GRID                                              */
+  /* ------------------------------------------------------------------ */
+  function renderKassaProducts() {
+    const el = $('kassaProducts');
+    if (!allProducts.length) {
+      el.innerHTML = '<p class="col-span-full text-center text-slate-500 py-12">Mahsulot topilmadi</p>';
+      return;
+    }
+    el.innerHTML = allProducts.map(p => `
+      <button onclick="addToCart(${p.id})"
+        class="bg-surface-light border border-slate-700/40 rounded-xl p-3 text-left card-hover flex flex-col gap-1 ${p.stock <= 0 ? 'opacity-40 pointer-events-none' : ''}">
+        <span class="text-sm font-semibold truncate">${esc(p.name)}</span>
+        <span class="text-xs text-slate-500">${p.barcode || '—'}</span>
+        <div class="mt-auto flex items-end justify-between">
+          <span class="text-brand-400 font-bold text-sm">${fmt(p.price)}</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded-md ${p.stock > 0 ? 'bg-emerald-900/40 text-emerald-400' : 'bg-red-900/40 text-red-400'}">${p.stock} dona</span>
+        </div>
+      </button>
+    `).join('');
+  }
+
+  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+  /* ------------------------------------------------------------------ */
+  /*  CART                                                               */
+  /* ------------------------------------------------------------------ */
+  function addToCart(pid) {
+    const product = allProducts.find(p => p.id === pid);
+    if (!product) return;
+    const existing = cart.find(c => c.product.id === pid);
+    if (existing) {
+      if (existing.quantity >= product.stock) { toast('Omborda yetarli emas', 'error'); return; }
+      existing.quantity++;
+    } else {
+      cart.push({ product, quantity: 1 });
+    }
+    renderCart();
+  }
+
+  function changeQty(pid, delta) {
+    const idx = cart.findIndex(c => c.product.id === pid);
+    if (idx === -1) return;
+    cart[idx].quantity += delta;
+    if (cart[idx].quantity <= 0) cart.splice(idx, 1);
+    else {
+      const max = cart[idx].product.stock;
+      if (cart[idx].quantity > max) { cart[idx].quantity = max; toast('Omborda yetarli emas', 'error'); }
+    }
+    renderCart();
+  }
+
+  function removeFromCart(pid) {
+    cart = cart.filter(c => c.product.id !== pid);
+    renderCart();
+  }
+
+  function renderCart() {
+    const el = $('cartItems');
+    $('cartCount').textContent = cart.reduce((s, c) => s + c.quantity, 0);
+    const total = cart.reduce((s, c) => s + c.product.price * c.quantity, 0);
+    $('cartTotal').textContent = fmt(total);
+
+    if (!cart.length) {
+      el.innerHTML = '<p class="text-center text-slate-600 py-12 text-sm">Savat bo\'sh</p>';
+      return;
+    }
+    el.innerHTML = cart.map(c => `
+      <div class="flex items-center gap-3 bg-surface rounded-xl p-3 border border-slate-700/30 fade-in">
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold truncate">${esc(c.product.name)}</p>
+          <p class="text-xs text-slate-500">${fmt(c.product.price)} × ${c.quantity}</p>
+        </div>
+        <div class="flex items-center gap-1">
+          <button onclick="changeQty(${c.product.id},-1)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 flex items-center justify-center text-sm font-bold transition-colors">−</button>
+          <span class="w-8 text-center text-sm font-bold">${c.quantity}</span>
+          <button onclick="changeQty(${c.product.id},1)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 flex items-center justify-center text-sm font-bold transition-colors">+</button>
+        </div>
+        <span class="text-sm font-bold text-brand-300 w-24 text-right">${fmt(c.product.price * c.quantity)}</span>
+        <button onclick="removeFromCart(${c.product.id})" class="text-red-500 hover:text-red-400 transition-colors text-lg leading-none">×</button>
+      </div>
+    `).join('');
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  SUBMIT SALE                                                       */
+  /* ------------------------------------------------------------------ */
+  async function submitSale() {
+    if (!cart.length) { toast('Savat bo\'sh', 'error'); return; }
+    const items = cart.map(c => ({ product_id: c.product.id, quantity: c.quantity }));
+    const created_at = $('saleDateTime').value || null;
+    const result = await api('/api/sales', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items, created_at }),
+    });
+    toast(`Sotuv #${result.id} — ${fmt(result.total_amount)}`);
+    cart = [];
+    setCurrentTime();
+    renderCart();
+    loadProducts($('kassaSearch').value.trim());
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  ADMIN – PRODUCTS TABLE                                            */
+  /* ------------------------------------------------------------------ */
+  async function loadAdminProducts() {
+    allProducts = await api('/api/products');
+    const el = $('adminProductsBody');
+    if (!allProducts.length) {
+      el.innerHTML = '<tr><td colspan="7" class="text-center text-slate-500 py-8">Hali mahsulot yo\'q</td></tr>';
+      return;
+    }
+    el.innerHTML = allProducts.map((p, i) => `
+      <tr class="hover:bg-slate-800/40 transition-colors">
+        <td class="px-4 py-3 text-slate-500">${i + 1}</td>
+        <td class="px-4 py-3 font-semibold">${esc(p.name)}</td>
+        <td class="px-4 py-3 text-right text-emerald-400">${fmt(p.price)}</td>
+        <td class="px-4 py-3 text-right text-slate-400">${fmt(p.cost_price)}</td>
+        <td class="px-4 py-3 text-right">
+          <span class="text-xs px-2 py-0.5 rounded-md ${p.stock > 5 ? 'bg-emerald-900/40 text-emerald-400' : p.stock > 0 ? 'bg-amber-900/40 text-amber-400' : 'bg-red-900/40 text-red-400'}">${p.stock}</span>
+        </td>
+        <td class="px-4 py-3 text-slate-500 text-xs">${p.barcode || '—'}</td>
+        <td class="px-4 py-3 text-center space-x-2">
+          <button onclick='editProduct(${JSON.stringify(p)})' class="text-brand-400 hover:text-brand-300 text-xs font-bold transition-colors">✏️</button>
+          <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-400 text-xs font-bold transition-colors">🗑️</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  ADMIN – DASHBOARD                                                 */
+  /* ------------------------------------------------------------------ */
+  async function loadDashboard() {
+    const d = await api('/api/dashboard');
+    $('statTodayRev').textContent = fmt(d.today_revenue);
+    $('statTodayProf').textContent = fmt(d.today_profit);
+    $('statMonthRev').textContent = fmt(d.month_revenue);
+    $('statMonthProf').textContent = fmt(d.month_profit);
+    // re-trigger animation
+    document.querySelectorAll('.pulse-once').forEach(el => {
+      el.classList.remove('pulse-once');
+      void el.offsetWidth;
+      el.classList.add('pulse-once');
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  ADMIN – INSIGHTS                                                  */
+  /* ------------------------------------------------------------------ */
+  async function loadInsights() {
+    const container = $('insightsContainer');
+    try {
+      const data = await api('/api/reports/insights');
+      let html = '';
+
+      // A) Low stock
+      if (data.low_stock.items.length > 0) {
+        const listStr = data.low_stock.items.map(i => `${esc(i.name)} (${i.stock} dona)`).join(', ');
+        html += `
+          <div class="bg-red-950/35 border border-red-500/20 rounded-xl p-4 space-y-2 fade-in">
+            <div class="flex items-center justify-between text-red-400 font-bold text-xs">
+              <span>⚠️ TUGAB BARAYOTGAN MAHSULOTLAR</span>
+              <span class="bg-red-500/20 px-2 py-0.5 rounded text-[10px]">Kam Qoldiq</span>
+            </div>
+            <div class="text-sm text-slate-300 font-medium">${listStr}</div>
+            <blockquote class="text-xs text-red-300/80 border-l-2 border-red-500/60 pl-2 mt-2 italic">
+              "${data.low_stock.recommendation}"
+            </blockquote>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="bg-emerald-950/20 border border-emerald-500/10 rounded-xl p-4 text-center text-xs text-emerald-400 font-medium fade-in">
+            ✅ Barcha mahsulotlar zaxirasi yetarli!
+          </div>
+        `;
+      }
+
+      // B) Best Sellers
+      if (data.best_sellers.items.length > 0) {
+        const listStr = data.best_sellers.items.map(i => `${esc(i.name)} (${i.quantity_sold} dona)`).join(', ');
+        html += `
+          <div class="bg-emerald-950/35 border border-emerald-500/20 rounded-xl p-4 space-y-2 fade-in">
+            <div class="flex items-center justify-between text-emerald-400 font-bold text-xs">
+              <span>🔥 TOP SOTILAYOTGAN MAHSULOTLAR</span>
+              <span class="bg-emerald-500/20 px-2 py-0.5 rounded text-[10px]">Best Seller</span>
+            </div>
+            <div class="text-sm text-slate-300 font-medium">${listStr}</div>
+            <blockquote class="text-xs text-emerald-300/80 border-l-2 border-emerald-500/60 pl-2 mt-2 italic">
+              "${data.best_sellers.recommendation}"
+            </blockquote>
+          </div>
+        `;
+      }
+
+      // C) Slow Movers
+      if (data.slow_movers.items.length > 0) {
+        const listStr = data.slow_movers.items.map(i => `${esc(i.name)} (${i.quantity_sold} dona)`).join(', ');
+        html += `
+          <div class="bg-amber-950/35 border border-amber-500/20 rounded-xl p-4 space-y-2 fade-in">
+            <div class="flex items-center justify-between text-amber-400 font-bold text-xs">
+              <span>📉 SUG'URILAYOTGAN MAHSULOTLAR</span>
+              <span class="bg-amber-500/20 px-2 py-0.5 rounded text-[10px]">Sotuv Sust</span>
+            </div>
+            <div class="text-sm text-slate-300 font-medium">${listStr}</div>
+            <blockquote class="text-xs text-amber-300/80 border-l-2 border-amber-500/60 pl-2 mt-2 italic">
+              "${data.slow_movers.recommendation}"
+            </blockquote>
+          </div>
+        `;
+      }
+
+      // D) Dead Stock
+      if (data.dead_stock.items.length > 0) {
+        const listStr = data.dead_stock.items.map(i => `${esc(i.name)} (${i.stock} dona omborda)`).join(', ');
+        html += `
+          <div class="bg-slate-900/60 border border-slate-700/40 rounded-xl p-4 space-y-2 fade-in">
+            <div class="flex items-center justify-between text-slate-400 font-bold text-xs">
+              <span>📦 SOTILMAYOTGAN MAHSULOTLAR (30 KUN)</span>
+              <span class="bg-slate-800 px-2 py-0.5 rounded text-[10px] text-slate-400">Harakatsiz</span>
+            </div>
+            <div class="text-sm text-slate-300 font-medium">${listStr}</div>
+            <blockquote class="text-xs text-slate-400 border-l-2 border-slate-500/60 pl-2 mt-2 italic">
+              "${data.dead_stock.recommendation}"
+            </blockquote>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html || `<div class="text-center py-8 text-slate-500 text-xs">Ma'lumotlar mavjud emas</div>`;
+    } catch (e) {
+      container.innerHTML = `<div class="text-center text-red-400 py-8 text-xs">Yuklashda xatolik yuz berdi</div>`;
+    }
+  }
+
+  async function sendTelegramTest() {
+    try {
+      toast('Telegramga xabar yuborilmoqda...');
+      const res = await api('/api/reports/insights/telegram', { method: 'POST' });
+      if (res.ok) {
+        toast('Telegramga xabar muvaffaqiyatli yuborildi!');
+      }
+    } catch (e) {
+      toast('Yuborishda xatolik: ' + e.message, 'error');
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  PRODUCT MODAL                                                     */
+  /* ------------------------------------------------------------------ */
+  function openProductModal() {
+    $('modalTitle').textContent = 'Yangi mahsulot';
+    $('pf_id').value = '';
+    $('productForm').reset();
+    $('productModal').classList.remove('hidden');
+  }
+
+  function editProduct(p) {
+    $('modalTitle').textContent = 'Mahsulotni tahrirlash';
+    $('pf_id').value = p.id;
+    $('pf_name').value = p.name;
+    $('pf_price').value = p.price;
+    $('pf_cost').value = p.cost_price;
+    $('pf_stock').value = p.stock;
+    $('pf_barcode').value = p.barcode || '';
+    $('productModal').classList.remove('hidden');
+  }
+
+  function closeProductModal() {
+    $('productModal').classList.add('hidden');
+  }
+
+  async function saveProduct(e) {
+    e.preventDefault();
+    const body = {
+      name: $('pf_name').value.trim(),
+      price: parseFloat($('pf_price').value),
+      cost_price: parseFloat($('pf_cost').value),
+      stock: parseInt($('pf_stock').value) || 0,
+      barcode: $('pf_barcode').value.trim() || null,
+    };
+    const id = $('pf_id').value;
+    if (id) body.id = parseInt(id);
+
+    await api('/api/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    toast(id ? 'Mahsulot yangilandi' : 'Mahsulot qoʻshildi');
+    closeProductModal();
+    loadAdminProducts();
+  }
+
+  async function deleteProduct(id) {
+    if (!confirm('Haqiqatan oʻchirmoqchimisiz?')) return;
+    await api(`/api/products/${id}`, { method: 'DELETE' });
+    toast('Mahsulot oʻchirildi');
+    loadAdminProducts();
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  CALENDAR REPORTS                                                  */
+  /* ------------------------------------------------------------------ */
+  let currentYear = new Date().getFullYear();
+  let currentMonth = new Date().getMonth() + 1;
+
+  async function initCalendar() {
+    renderCalendarHeader();
+    await loadCalendarData();
+  }
+
+  function changeMonth(delta) {
+    currentMonth += delta;
+    if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+    else if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+    initCalendar();
+  }
+
+  function renderCalendarHeader() {
+    const monthNames = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
+    $('calendarMonthYear').textContent = `${monthNames[currentMonth - 1]}, ${currentYear}`;
+  }
+
+  async function loadCalendarData() {
+    const data = await api(`/api/reports/calendar?year=${currentYear}&month=${currentMonth}`);
+    const grid = $('calendarGrid');
+    grid.innerHTML = '';
+    
+    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+    let firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
+    firstDay = firstDay === 0 ? 6 : firstDay - 1; // Make Monday = 0
+    
+    for (let i = 0; i < firstDay; i++) {
+      grid.innerHTML += `<div class="p-2 border border-transparent"></div>`;
+    }
+    
+    for (let i = 1; i <= daysInMonth; i++) {
+      const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+      const dayData = data[dateStr];
+      
+      let content = `<div class="font-bold text-slate-300">${i}</div>`;
+      let cursor = 'cursor-default';
+      let hover = '';
+      let click = '';
+      
+      if (dayData && (dayData.sales > 0 || dayData.profit > 0)) {
+        content += `<div class="text-[10px] text-emerald-400 font-bold mt-1">+${fmt(dayData.sales).replace(' soʻm', '')}</div>`;
+        content += `<div class="text-[9px] text-sky-400 font-semibold mt-0.5">Foyda: ${fmt(dayData.profit).replace(' soʻm', '')}</div>`;
+        cursor = 'cursor-pointer';
+        hover = 'hover:bg-slate-800 transition-colors';
+        click = `onclick="openDailySales('${dateStr}')"`;
+      }
+      
+      grid.innerHTML += `<div ${click} class="p-2 border border-slate-700/40 rounded-xl bg-surface min-h-[80px] flex flex-col ${cursor} ${hover}">${content}</div>`;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  DAILY SALES MODAL                                                 */
+  /* ------------------------------------------------------------------ */
+  function closeDailySalesModal() {
+    $('dailySalesModal').classList.add('hidden');
+  }
+
+  async function openDailySales(dateStr) {
+    $('dailySalesTitle').textContent = `${dateStr} kungi sotuvlar`;
+    const sales = await api(`/api/sales?date=${dateStr}`);
+    const el = $('dailySalesBody');
+    if (!sales.length) {
+      el.innerHTML = `<tr><td colspan="4" class="text-center text-slate-500 py-8">Bu kunda sotuv bo'lmagan</td></tr>`;
+    } else {
+      el.innerHTML = sales.map((s) => {
+        const time = new Date(s.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+        const itemsHtml = s.items.map(i => `${i.quantity} x ${esc(i.product_name)}`).join('<br>');
+        return `
+          <tr class="hover:bg-slate-800/40 transition-colors">
+            <td class="px-4 py-3 text-slate-400 font-medium align-top">${time}</td>
+            <td class="px-4 py-3 text-slate-300 text-xs leading-relaxed">${itemsHtml}</td>
+            <td class="px-4 py-3 text-right text-emerald-400 font-semibold align-top">${fmt(s.total_amount)}</td>
+            <td class="px-4 py-3 text-right text-sky-400 font-semibold align-top">${fmt(s.profit)}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+    $('dailySalesModal').classList.remove('hidden');
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  INIT                                                              */
+  /* ------------------------------------------------------------------ */
+  function setCurrentTime() {
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const formatted = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    $('saleDateTime').value = formatted;
+    $('saleDateTime').max = formatted;
+  }
+
+  setCurrentTime();
+  loadProducts();
+  renderCart();
+  </script>
+</body>
+</html>
