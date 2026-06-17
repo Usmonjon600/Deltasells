@@ -3,3 +3,6 @@ uvicorn[standard]
 sqlalchemy
 pydantic
 apscheduler
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart

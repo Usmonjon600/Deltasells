@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: { sans: ['Inter', 'sans-serif'] },
@@ -26,7 +27,67 @@
     }
   </script>
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    /* Cyber Glassmorphism overrides */
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #020617 100%) !important;
+      background-attachment: fixed !important;
+    }
+    /* Ambient Glow behind everything */
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      width: 40vw;
+      height: 40vw;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      filter: blur(120px);
+    }
+    body::before {
+      top: -10vw;
+      left: -10vw;
+      background: rgba(6, 182, 212, 0.08); /* cyan-500 */
+    }
+    body::after {
+      bottom: -10vw;
+      right: -10vw;
+      background: rgba(99, 102, 241, 0.08); /* indigo-500 */
+    }
+    
+    .bg-surface {
+      background-color: rgba(15, 23, 42, 0.4) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+    }
+    .bg-surface-light {
+      background-color: rgba(30, 41, 59, 0.4) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      border-color: rgba(6, 182, 212, 0.15) !important;
+    }
+    
+    /* Light mode fixes */
+    body.light-mode {
+      background: #f1f5f9 !important;
+    }
+    body.light-mode::before, body.light-mode::after {
+      display: none;
+    }
+    body.light-mode .bg-surface {
+      background-color: #f1f5f9 !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    body.light-mode .bg-surface-light {
+      background-color: #ffffff !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      border-color: #e2e8f0 !important;
+    }
+
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    body { font-family: 'Inter', sans-serif; transition: background-color .3s, color .3s; }
     /* ---------- scrollbar ---------- */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -36,6 +97,13 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     .card-hover { transition: transform .15s, box-shadow .15s; }
     .card-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99,102,241,.18); }
+    /* ---------- insights card hover ---------- */
+    .insight-card { transition: transform .2s cubic-bezier(.4,0,.2,1), box-shadow .2s, border-color .2s; }
+    .insight-card:hover { transform: translateY(-3px) scale(1.01); }
+    .insight-card-red:hover { border-color: rgba(239,68,68,.45) !important; box-shadow: 0 10px 25px -5px rgba(239,68,68,.15), 0 8px 10px -6px rgba(239,68,68,.15); }
+    .insight-card-green:hover { border-color: rgba(16,185,129,.45) !important; box-shadow: 0 10px 25px -5px rgba(16,185,129,.15), 0 8px 10px -6px rgba(16,185,129,.15); }
+    .insight-card-amber:hover { border-color: rgba(245,158,11,.45) !important; box-shadow: 0 10px 25px -5px rgba(245,158,11,.15), 0 8px 10px -6px rgba(245,158,11,.15); }
+    .insight-card-slate:hover { border-color: rgba(148,163,184,.4) !important; box-shadow: 0 10px 25px -5px rgba(148,163,184,.1), 0 8px 10px -6px rgba(148,163,184,.1); }
     /* ---------- toast ---------- */
     #toast {
       position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 100;
@@ -68,23 +136,271 @@
       border-color: #818cf8 !important;
       box-shadow: 0 0 0 3px rgba(129,140,248,.25);
     }
+
+    /* ============================================================ */
+    /* LIGHT MODE OVERRIDES                                         */
+    /* ============================================================ */
+    body.light-mode { background-color: #f8fafc !important; color: #1e293b !important; }
+    body.light-mode ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+
+    /* Backgrounds */
+    body.light-mode .bg-surface   { background-color: #f1f5f9 !important; }
+    body.light-mode .bg-surface-light { background-color: #ffffff !important; }
+    body.light-mode .bg-surface-lighter { background-color: #e2e8f0 !important; }
+    body.light-mode [class*='bg-slate-800'] { background-color: #e2e8f0 !important; }
+    body.light-mode [class*='bg-slate-700'] { background-color: #e2e8f0 !important; }
+    body.light-mode [class*='bg-slate-900'] { background-color: #f1f5f9 !important; }
+
+    /* Text */
+    body.light-mode .text-slate-100, body.light-mode .text-slate-200 { color: #1e293b !important; }
+    body.light-mode .text-slate-300 { color: #334155 !important; }
+    body.light-mode .text-slate-400 { color: #64748b !important; }
+    body.light-mode .text-slate-500 { color: #94a3b8 !important; }
+
+    /* Borders */
+    body.light-mode [class*='border-slate-700'] { border-color: #cbd5e1 !important; }
+    body.light-mode [class*='border-slate-600'] { border-color: #cbd5e1 !important; }
+
+    /* Header */
+    body.light-mode header { background-color: #ffffff !important; border-color: #e2e8f0 !important; }
+    body.light-mode nav.bg-surface { background-color: #f1f5f9 !important; }
+
+    /* Cards and panels */
+    body.light-mode .bg-gradient-to-br.from-surface { background: linear-gradient(to bottom right, #f8fafc, #f1f5f9) !important; }
+    body.light-mode [class*='from-surface'] { --tw-gradient-from: #f8fafc; }
+    body.light-mode [class*='to-surface'] { --tw-gradient-to: #f1f5f9; }
+
+    /* Inputs */
+    body.light-mode input, body.light-mode select, body.light-mode textarea {
+      background-color: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+      color: #1e293b !important;
+    }
+    body.light-mode input::placeholder, body.light-mode textarea::placeholder { color: #94a3b8 !important; }
+    body.light-mode select option { background: #ffffff; color: #1e293b; }
+
+    /* Auth container */
+    body.light-mode #authContainer { background-color: #f8fafc !important; }
+    body.light-mode #loginView, body.light-mode #registerView {
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+    }
+    body.light-mode .pin-dot { border-color: #cbd5e1 !important; }
+
+    /* Modal */
+    body.light-mode .bg-surface-light.rounded-2xl { background-color: #ffffff !important; }
+
+    /* Calendar */
+    body.light-mode .bg-slate-800\/40 { background-color: rgba(241,245,249,0.8) !important; }
+    body.light-mode .hover\:bg-slate-700:hover { background-color: #e2e8f0 !important; }
+
+    /* Tab buttons in light mode */
+    body.light-mode .tab-btn.active { color: #4f46e5 !important; }
+    body.light-mode .tab-btn:not(.active) { color: #64748b !important; }
+    body.light-mode .tab-btn:not(.active):hover { color: #1e293b !important; }
+
+    /* Stat cards */
+    body.light-mode [class*='bg-emerald-900'] { background-color: #d1fae5 !important; }
+    body.light-mode [class*='bg-red-900'] { background-color: #fee2e2 !important; }
+    body.light-mode [class*='bg-brand-'][class*='/40'] { background-color: rgba(238,242,255,0.8) !important; }
+
+    /* Theme toggle switch */
+    .theme-toggle-track {
+      width: 52px; height: 28px; border-radius: 999px;
+      background: linear-gradient(135deg, #334155, #1e293b);
+      position: relative; cursor: pointer;
+      transition: background .35s;
+      border: 2px solid rgba(255,255,255,0.12);
+      flex-shrink: 0;
+    }
+    body.light-mode .theme-toggle-track {
+      background: linear-gradient(135deg, #818cf8, #6366f1);
+      border-color: rgba(99,102,241,0.3);
+    }
+    .theme-toggle-thumb {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #64748b;
+      position: absolute; top: 2px; left: 2px;
+      transition: transform .35s cubic-bezier(.4,0,.2,1), background .35s;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+    }
+    body.light-mode .theme-toggle-thumb {
+      transform: translateX(24px);
+      background: #ffffff;
+    }
+    .theme-mode-card {
+      display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+      border-radius: 14px; cursor: pointer;
+      border: 2px solid transparent;
+      transition: all .25s;
+      background: rgba(255,255,255,0.04);
+    }
+    body.light-mode .theme-mode-card { background: rgba(0,0,0,0.03); }
+    .theme-mode-card.selected {
+      border-color: #6366f1;
+      background: rgba(99,102,241,0.12);
+    }
+    body.light-mode .theme-mode-card.selected {
+      border-color: #4f46e5;
+      background: rgba(79,70,229,0.08);
+    }
   </style>
 </head>
 
-<body class="bg-surface text-slate-100 h-full flex flex-col overflow-hidden">
+<body class="text-slate-100 h-full flex flex-col overflow-hidden">
+
+  <!-- ========== AUTHENTICATION ========== -->
+  <div id="authContainer" class="absolute inset-0 z-50 bg-gradient-to-br from-[#0f172a] to-[#020617] flex flex-col items-center justify-center p-4 py-8 overflow-y-auto fade-in hidden">
+    
+    <div id="authCard" class="bg-[#0f172a]/90 backdrop-blur-xl border border-cyan-500/30 rounded-3xl shadow-[0_0_25px_rgba(6,182,212,0.15)] p-6 sm:p-10 w-full max-w-md flex flex-col gap-6 relative overflow-hidden my-auto">
+      
+      <!-- Glow effect behind the card -->
+      <div class="absolute -top-24 -left-24 w-48 h-48 bg-cyan-500/20 blur-[80px] rounded-full pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-indigo-500/20 blur-[80px] rounded-full pointer-events-none"></div>
+
+      <div class="text-center relative z-10">
+        <h2 class="text-2xl font-extrabold tracking-tight text-white mb-1">
+          Delta Sells
+        </h2>
+        <p class="text-slate-400 text-xs font-semibold tracking-wide">Kassa & Boshqaruv Tizimi</p>
+      </div>
+      
+      <!-- Tabs -->
+      <div class="flex border-b border-slate-700/50 mb-2 relative z-10">
+        <button onclick="showLogin()" id="tabLogin" class="flex-1 pb-3 text-sm font-bold text-white border-b-2 border-cyan-400 transition-colors">Kirish</button>
+        <button onclick="showRegister()" id="tabRegister" class="flex-1 pb-3 text-sm font-bold text-slate-500 border-b-2 border-transparent hover:text-slate-300 transition-colors">Ro'yxatdan o'tish</button>
+      </div>
+
+      <!-- Login View -->
+      <div id="loginView" class="relative z-10">
+        <form onsubmit="submitLogin(event)" class="space-y-5">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">FOYDALANUVCHI NOMI</label>
+            <input id="loginUsername" required class="w-full bg-[#e2e8f0] border-none rounded-xl px-4 py-3 outline-none text-slate-900 font-bold placeholder-slate-400 focus:ring-2 focus:ring-cyan-500/50 transition-all shadow-inner" placeholder="Useradmin" />
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">PAROL</label>
+            <div class="relative">
+              <input id="loginPassword" type="password" required class="w-full bg-[#e2e8f0] border-none rounded-xl px-4 py-3 outline-none text-slate-900 font-bold placeholder-slate-400 focus:ring-2 focus:ring-cyan-500/50 transition-all shadow-inner pr-12" placeholder="••••••••" />
+              <button type="button" onclick="togglePassword('loginPassword')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-cyan-600 transition-colors">
+                <svg id="loginPassword_eye" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="w-full py-3.5 rounded-xl font-bold bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 text-white transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] mt-2">
+            Kirish
+          </button>
+        </form>
+
+        <div class="relative flex items-center py-6">
+          <div class="flex-grow border-t border-slate-700/50"></div>
+          <span class="flex-shrink-0 mx-4 text-slate-500 text-[10px] font-bold tracking-widest">YOKI</span>
+          <div class="flex-grow border-t border-slate-700/50"></div>
+        </div>
+
+        <button type="button" onclick="togglePinPad()" class="w-full py-3 rounded-xl font-semibold border border-cyan-900/60 text-cyan-400 hover:bg-cyan-900/20 transition-all flex items-center justify-center gap-2 mb-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"></path></svg>
+          PIN-KOD orqali tezkor kirish
+        </button>
+
+        <div id="pinPadContainer" class="hidden flex flex-col items-center gap-4 mt-4 animate-fade-in">
+          <div class="flex gap-3 justify-center mb-1">
+            <div class="pin-dot w-3 h-3 rounded-full border border-cyan-500 bg-transparent transition-colors shadow-[0_0_8px_rgba(6,182,212,0.3)]" id="pinDot1"></div>
+            <div class="pin-dot w-3 h-3 rounded-full border border-cyan-500 bg-transparent transition-colors shadow-[0_0_8px_rgba(6,182,212,0.3)]" id="pinDot2"></div>
+            <div class="pin-dot w-3 h-3 rounded-full border border-cyan-500 bg-transparent transition-colors shadow-[0_0_8px_rgba(6,182,212,0.3)]" id="pinDot3"></div>
+            <div class="pin-dot w-3 h-3 rounded-full border border-cyan-500 bg-transparent transition-colors shadow-[0_0_8px_rgba(6,182,212,0.3)]" id="pinDot4"></div>
+          </div>
+          <div class="grid grid-cols-3 gap-3 w-64">
+            <button onclick="addPin('1')" class="w-16 h-16 rounded-full bg-[#1e293b]/50 border border-slate-700/50 text-cyan-50 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-xl font-medium transition-all place-self-center backdrop-blur-sm">1</button>
+            <button onclick="addPin('2')" class="w-16 h-16 rounded-full bg-[#1e293b]/50 border border-slate-700/50 text-cyan-50 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-xl font-medium transition-all place-self-center backdrop-blur-sm">2</button>
+            <button onclick="addPin('3')" class="w-16 h-16 rounded-full bg-[#1e293b]/50 border border-slate-700/50 text-cyan-50 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-xl font-medium transition-all place-self-center backdrop-blur-sm">3</button>
+            <button onclick="addPin('4')" class="w-16 h-16 rounded-full bg-[#1e293b]/50 border border-slate-700/50 text-cyan-50 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-xl font-medium transition-all place-self-center backdrop-blur-sm">4</button>
+            <button onclick="addPin('5')" class="w-16 h-16 rounded-full bg-[#1e293b]/50 border border-slate-700/50 text-cyan-50 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-xl font-medium transition-all place-self-center backdrop-blur-sm">5</button>
+            <button onclick="addPin('6')" class="w-16 h-16 rounded-full bg-[#1e293b]/50 border border-slate-700/50 text-cyan-50 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-xl font-medium transition-all place-self-center backdrop-blur-sm">6</button>
+            <button onclick="addPin('7')" class="w-16 h-16 rounded-full bg-[#1e293b]/50 border border-slate-700/50 text-cyan-50 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-xl font-medium transition-all place-self-center backdrop-blur-sm">7</button>
+            <button onclick="addPin('8')" class="w-16 h-16 rounded-full bg-[#1e293b]/50 border border-slate-700/50 text-cyan-50 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-xl font-medium transition-all place-self-center backdrop-blur-sm">8</button>
+            <button onclick="addPin('9')" class="w-16 h-16 rounded-full bg-[#1e293b]/50 border border-slate-700/50 text-cyan-50 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-xl font-medium transition-all place-self-center backdrop-blur-sm">9</button>
+            <div></div>
+            <button onclick="addPin('0')" class="w-16 h-16 rounded-full bg-[#1e293b]/50 border border-slate-700/50 text-cyan-50 hover:bg-cyan-900/30 hover:border-cyan-500/40 text-xl font-medium transition-all place-self-center backdrop-blur-sm">0</button>
+            <button onclick="removePin()" class="w-16 h-16 rounded-full bg-red-900/10 text-red-400 border border-red-900/30 hover:bg-red-900/30 hover:border-red-500/40 text-xl font-medium transition-all place-self-center flex items-center justify-center backdrop-blur-sm">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="text-center mt-8">
+          <p class="text-[10px] text-slate-500 font-medium tracking-wide">
+            Demo parollar: <span class="text-cyan-400">12345678</span> (Useradmin) <span class="mx-1 text-slate-700">|</span> <span class="text-emerald-400">0123</span> (PIN)
+          </p>
+        </div>
+      </div>
+
+      <!-- Register View -->
+      <div id="registerView" class="relative z-10 hidden">
+        <form onsubmit="submitRegister(event)" class="space-y-4">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Do'kon nomi *</label>
+            <input id="regShopName" required class="w-full bg-[#e2e8f0] border-none rounded-xl px-4 py-3 outline-none text-slate-900 font-bold placeholder-slate-400 focus:ring-2 focus:ring-cyan-500/50 transition-all shadow-inner" placeholder="Mening do'konim" />
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Login (Username) *</label>
+            <input id="regUsername" required class="w-full bg-[#e2e8f0] border-none rounded-xl px-4 py-3 outline-none text-slate-900 font-bold placeholder-slate-400 focus:ring-2 focus:ring-cyan-500/50 transition-all shadow-inner" placeholder="admin" />
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Parol *</label>
+            <div class="relative">
+              <input id="regPassword" type="password" required class="w-full bg-[#e2e8f0] border-none rounded-xl px-4 py-3 outline-none text-slate-900 font-bold placeholder-slate-400 focus:ring-2 focus:ring-cyan-500/50 transition-all shadow-inner pr-12" placeholder="••••••••" />
+              <button type="button" onclick="togglePassword('regPassword')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-cyan-600 transition-colors">
+                <svg id="regPassword_eye" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">PIN-kod (Tezkor kirish) *</label>
+            <div class="relative">
+              <input id="regPin" type="password" pattern="[0-9]{4}" maxlength="4" required class="w-full bg-[#e2e8f0] border-none rounded-xl px-4 py-3 outline-none text-slate-900 font-bold placeholder-slate-400 focus:ring-2 focus:ring-cyan-500/50 transition-all shadow-inner pr-12" placeholder="Masalan: 1234" />
+              <button type="button" onclick="togglePassword('regPin')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-cyan-600 transition-colors">
+                <svg id="regPin_eye" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="w-full py-3.5 rounded-xl font-bold bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 text-white transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] mt-4">
+            Ro'yxatdan o'tish
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========== APP CONTAINER ========== -->
+  <div id="appContainer" class="flex-1 flex flex-col overflow-hidden hidden">
 
   <!-- ========== HEADER ========== -->
-  <header class="flex items-center justify-between px-6 py-3 bg-surface-light border-b border-slate-700/60 shrink-0">
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white font-extrabold text-lg shadow-lg shadow-brand-500/30">D</div>
-      <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-brand-300 to-brand-500 bg-clip-text text-transparent">Delta Sells</h1>
+  <header class="flex flex-col md:flex-row px-5 sm:px-8 py-4 bg-surface-light border-b border-slate-700/60 shrink-0 gap-4 md:justify-between md:items-center">
+    <div class="flex items-center justify-between w-full md:w-auto">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-brand-500/30">D</div>
+        <div class="flex flex-col">
+          <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-brand-300 to-brand-500 bg-clip-text text-transparent leading-none mt-1">Delta Sells</h1>
+          <span id="headerShopName" class="text-xs text-slate-400 font-medium">...</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 md:hidden">
+        <button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm font-bold px-4 py-2 rounded-xl border border-red-500/20 hover:bg-red-500/10 transition-colors">🚪 Chiqish</button>
+      </div>
     </div>
-    <nav class="flex gap-1 bg-surface rounded-xl p-1">
-      <button id="tabKassa" onclick="switchTab('kassa')" class="tab-btn active px-5 py-2 rounded-lg text-sm font-semibold text-slate-100">🛒 Kassa</button>
-      <button id="tabAdmin" onclick="switchTab('admin')" class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-slate-100">⚙️ Admin</button>
-      <button id="tabReports" onclick="switchTab('reports')" class="tab-btn px-5 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-slate-100">📅 Hisobotlar</button>
+    <nav class="flex gap-2 bg-surface rounded-2xl p-1.5 overflow-x-auto hide-scrollbar max-w-full w-full md:w-auto">
+      <button id="tabKassa" onclick="switchTab('kassa')" class="tab-btn active px-6 py-2.5 rounded-xl text-base font-bold text-slate-100 hover:text-slate-100" data-i18n="tab_kassa">🛒 Kassa</button>
+      <button id="tabAdmin" onclick="switchTab('admin')" class="tab-btn px-6 py-2.5 rounded-xl text-base font-bold text-slate-400 hover:text-slate-100" data-i18n="tab_admin">📊 Admin</button>
+      <button id="tabReports" onclick="switchTab('reports')" class="tab-btn px-6 py-2.5 rounded-xl text-base font-bold text-slate-400 hover:text-slate-100" data-i18n="tab_reports">📅 Hisobotlar</button>
+      <button id="tabSettings" onclick="switchTab('settings')" class="tab-btn px-6 py-2.5 rounded-xl text-base font-bold text-slate-400 hover:text-slate-100" data-i18n="tab_settings">⚙️ Sozlamalar</button>
     </nav>
-    <div class="text-xs text-slate-500" id="headerClock"></div>
+    <div class="hidden md:flex items-center gap-5">
+      <div class="text-sm sm:text-base text-slate-400 font-medium" id="headerClock"></div>
+      <button onclick="logout()" class="text-red-400 hover:text-red-300 text-sm font-bold px-4 py-2 rounded-xl border border-red-500/20 hover:bg-red-500/10 transition-colors">🚪 Chiqish</button>
+    </div>
   </header>
 
   <!-- ========== TOAST ========== -->
@@ -93,12 +409,12 @@
   <!-- ============================================================ -->
   <!--                      KASSA PANELI                            -->
   <!-- ============================================================ -->
-  <main id="kassaView" class="flex-1 flex overflow-hidden fade-in">
+  <main id="kassaView" class="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden fade-in">
 
     <!-- LEFT: Product search & grid -->
-    <section class="w-[58%] flex flex-col border-r border-slate-700/40 p-5 gap-4 overflow-hidden">
+    <section class="w-full md:w-[58%] h-[60%] md:h-auto flex flex-col border-b md:border-b-0 md:border-r border-slate-700/40 p-3 sm:p-5 gap-4 overflow-hidden md:flex-1 shrink-0 md:shrink">
       <div class="relative">
-        <input id="kassaSearch" type="text" placeholder="Mahsulot nomi yoki shtrix-kod..." oninput="searchKassa()"
+        <input id="kassaSearch" type="text" placeholder="Mahsulot nomi yoki shtrix-kod..." data-i18n="search_placeholder" oninput="searchKassa()"
           class="w-full bg-surface-light border border-slate-600 rounded-xl px-4 py-3 pl-11 text-sm placeholder-slate-500 outline-none" />
         <svg class="absolute left-3.5 top-3.5 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       </div>
@@ -106,28 +422,60 @@
     </section>
 
     <!-- RIGHT: Cart -->
-    <section class="w-[42%] flex flex-col p-5 gap-4 overflow-hidden">
+    <section class="w-full md:w-[42%] h-auto md:h-auto flex flex-col p-3 sm:p-5 gap-4 md:overflow-hidden shrink-0">
       <h2 class="text-base font-bold text-slate-300 flex items-center gap-2">
         <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-brand-600/20 text-brand-400 text-sm">🛒</span>
-        Savat
+        <span data-i18n="cart_title">Savat</span>
         <span id="cartCount" class="ml-auto text-xs bg-brand-600/30 text-brand-300 px-2 py-0.5 rounded-full">0</span>
       </h2>
 
-      <div id="cartItems" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+      <div id="cartItems" class="flex-1 max-h-[180px] md:max-h-none overflow-y-auto space-y-2 pr-1"></div>
 
       <!-- Cart summary -->
       <div class="border-t border-slate-700/60 pt-4 space-y-3">
         <div class="flex flex-col gap-1">
-          <label for="saleDateTime" class="text-xs text-slate-400">Savdo vaqti:</label>
+          <label for="saleDateTime" class="text-xs text-slate-400" data-i18n="sale_time">Savdo vaqti:</label>
           <input type="datetime-local" id="saleDateTime" class="w-full bg-surface-light border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 outline-none" />
         </div>
+        
+        <!-- Payment Type Selection -->
+        <div class="flex flex-col gap-1.5">
+          <span class="text-xs text-slate-400" data-i18n="payment_type_label">Toʻlov turi:</span>
+          <div class="grid grid-cols-3 gap-1.5">
+            <button type="button" id="payNaqdBtn" onclick="setPaymentType('naqd')" class="flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl border border-emerald-500 bg-emerald-500/10 text-emerald-400 font-bold text-xs transition-all focus:outline-none">
+              <span>💵</span> <span data-i18n="pay_naqd">Naqd pul</span>
+            </button>
+            <button type="button" id="payKartaBtn" onclick="setPaymentType('karta')" class="flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl border border-slate-700/60 bg-transparent text-slate-400 font-semibold text-xs transition-all hover:bg-slate-800/40 dark:hover:bg-slate-800/40 focus:outline-none">
+              <span>💳</span> <span data-i18n="pay_karta">Karta</span>
+            </button>
+            <button type="button" id="payAralashBtn" onclick="setPaymentType('aralash')" class="flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl border border-slate-700/60 bg-transparent text-slate-400 font-semibold text-xs transition-all hover:bg-slate-800/40 dark:hover:bg-slate-800/40 focus:outline-none">
+              <span>🔄</span> <span data-i18n="pay_aralash">Aralash</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Split Payment Inputs -->
+        <div id="splitInputsContainer" class="hidden flex flex-col gap-2 bg-surface p-3 rounded-xl border border-slate-700/40 fade-in">
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="flex flex-col gap-1">
+              <label for="splitCashAmount" class="text-slate-400 text-[10px]" data-i18n="split_cash_label">Naqd pul summasi:</label>
+              <input type="number" id="splitCashAmount" oninput="handleSplitInput('cash')" placeholder="0" class="w-full bg-surface-light border border-slate-600 rounded-lg px-2 py-1.5 outline-none text-slate-200 text-xs" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label for="splitCardAmount" class="text-slate-400 text-[10px]" data-i18n="split_card_label">Karta summasi:</label>
+              <input type="number" id="splitCardAmount" oninput="handleSplitInput('card')" placeholder="0" class="w-full bg-surface-light border border-slate-600 rounded-lg px-2 py-1.5 outline-none text-slate-200 text-xs" />
+            </div>
+          </div>
+          <div id="splitFeedback" class="text-[10px] text-red-400 font-semibold text-center hidden"></div>
+        </div>
+
         <div class="flex justify-between text-sm text-slate-400">
-          <span>Jami:</span>
+          <span data-i18n="total_amount">Jami:</span>
           <span id="cartTotal" class="text-xl font-extrabold text-slate-100">0 soʻm</span>
         </div>
         <button onclick="submitSale()"
           class="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white shadow-lg shadow-emerald-600/25 transition-all active:scale-[.97]">
-          ✅  Sotish
+          ✅  <span data-i18n="btn_sell">Sotish</span>
         </button>
       </div>
     </section>
@@ -139,35 +487,48 @@
   <main id="adminView" class="flex-1 flex flex-col overflow-hidden hidden fade-in">
 
     <!-- Dashboard cards -->
-    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 pb-0 shrink-0">
+    <section class="grid grid-cols-1 md:grid-cols-5 gap-4 p-5 pb-2 shrink-0">
+      <!-- 1-BLOK: Bugungi Jami Tushum -->
       <div class="bg-surface-light rounded-2xl p-4 border border-slate-700/40 card-hover">
-        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Bugungi tushum</p>
-        <p id="statTodayRev" class="text-xl font-extrabold text-emerald-400 pulse-once">0</p>
+        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1"><span data-i18n="stat_today_total_rev">Bugungi Jami Tushum</span></p>
+        <p id="statTodayTotalRev" class="text-xl font-extrabold text-emerald-400 pulse-once">0 soʻm</p>
       </div>
+
+      <!-- 2-BLOK: Oylik Jami Tushum -->
       <div class="bg-surface-light rounded-2xl p-4 border border-slate-700/40 card-hover">
-        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Bugungi foyda</p>
-        <p id="statTodayProf" class="text-xl font-extrabold text-sky-400 pulse-once">0</p>
+        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1"><span data-i18n="stat_month_total_rev">Oylik Jami Tushum</span></p>
+        <p id="statMonthTotalRev" class="text-xl font-extrabold text-amber-400 pulse-once">0 soʻm</p>
       </div>
+
+      <!-- 3-BLOK: G'azna (Naqd Pul) -->
       <div class="bg-surface-light rounded-2xl p-4 border border-slate-700/40 card-hover">
-        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Oylik tushum</p>
-        <p id="statMonthRev" class="text-xl font-extrabold text-amber-400 pulse-once">0</p>
+        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1"><span data-i18n="stat_today_cash_treasury">💵 G'azna (Naqd Pul)</span></p>
+        <p id="statTodayCashTreasury" class="text-xl font-extrabold text-teal-400 pulse-once">0 soʻm</p>
       </div>
+
+      <!-- 4-BLOK: Karta To'lovlari -->
       <div class="bg-surface-light rounded-2xl p-4 border border-slate-700/40 card-hover">
-        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1">Oylik foyda</p>
-        <p id="statMonthProf" class="text-xl font-extrabold text-purple-400 pulse-once">0</p>
+        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1"><span data-i18n="stat_today_card_revenue">💳 Karta To'lovlari</span></p>
+        <p id="statTodayCardRevenue" class="text-xl font-extrabold text-sky-400 pulse-once">0 soʻm</p>
+      </div>
+
+      <!-- 5-BLOK: Oylik Sof Foyda -->
+      <div class="bg-surface-light rounded-2xl p-4 border border-slate-700/40 card-hover">
+        <p class="text-[11px] uppercase tracking-wider text-slate-500 mb-1"><span data-i18n="stat_month_net_profit">📈 Oylik Sof Foyda</span></p>
+        <p id="statMonthNetProfit" class="text-xl font-extrabold text-purple-400 pulse-once">0 soʻm</p>
       </div>
     </section>
 
     <!-- Bottom split layout -->
-    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden gap-4 p-5 pt-0">
+    <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden gap-4 p-5 pt-2 min-h-0">
       
       <!-- Products management -->
-      <section class="flex-1 flex flex-col overflow-hidden gap-4 bg-surface-light border border-slate-700/40 rounded-2xl p-5">
+      <section class="flex-1 flex flex-col overflow-hidden gap-4 bg-surface-light border border-slate-700/40 rounded-2xl p-5 min-h-[400px] lg:min-h-0 shrink-0">
         <div class="flex items-center justify-between">
-          <h2 class="text-base font-bold text-slate-300">📦 Mahsulotlar</h2>
+          <h2 class="text-base font-bold text-slate-300">📦 <span data-i18n="admin_products">Mahsulotlar</span></h2>
           <button onclick="openProductModal()"
             class="px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white transition-colors shadow-md shadow-brand-700/30">
-            + Yangi mahsulot
+            + <span data-i18n="btn_new_product">Yangi mahsulot</span>
           </button>
         </div>
 
@@ -176,6 +537,7 @@
             <thead class="bg-surface-lighter/60 text-slate-400 text-[11px] uppercase tracking-wider sticky top-0 z-10">
               <tr>
                 <th class="text-left px-4 py-3">#</th>
+                <th class="text-center px-4 py-3">Rasm</th>
                 <th class="text-left px-4 py-3">Nomi</th>
                 <th class="text-right px-4 py-3">Narxi</th>
                 <th class="text-right px-4 py-3">Tannarxi</th>
@@ -189,23 +551,164 @@
         </div>
       </section>
 
-      <!-- Smart Insights -->
-      <section class="w-full lg:w-[380px] xl:w-[440px] flex flex-col overflow-hidden gap-4 bg-surface-light border border-slate-700/40 rounded-2xl p-5">
-        <div class="flex items-center justify-between">
-          <h2 class="text-base font-bold text-slate-300 flex items-center gap-2">
-            <span>🧠</span> Bildirishnomalar va Tavsiyalar
-          </h2>
-          <button onclick="sendTelegramTest()" title="Telegramga yuborish"
-            class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-sky-600 hover:bg-sky-500 text-white transition-colors shadow-sm flex items-center gap-1 active:scale-95">
-            ✈️ Yuborish
-          </button>
-        </div>
-        <div id="insightsContainer" class="flex-1 overflow-y-auto space-y-4 pr-1">
-          <div class="flex items-center justify-center h-32 text-slate-500 text-xs">
-            Tahlil qilinmoqda...
+      <!-- Right Side Column -->
+      <div class="w-full lg:w-[380px] xl:w-[440px] flex flex-col gap-4 overflow-visible lg:overflow-y-auto pr-1 shrink-0" style="max-height: calc(100vh - 120px);">
+        
+        <!-- Smart Insights -->
+        <section class="min-h-[250px] lg:flex-1 flex flex-col overflow-hidden gap-4 bg-surface-light border border-slate-700/40 rounded-2xl p-4 shrink-0">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-bold text-slate-300 flex items-center gap-2">
+              <span>🧠</span> <span data-i18n="admin_insights">Bildirishnomalar va Tavsiyalar</span>
+            </h2>
+            <button onclick="sendTelegramTest()" title="Telegramga yuborish"
+              class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-sky-600 hover:bg-sky-500 text-white transition-colors shadow-sm flex items-center gap-1 active:scale-95">
+              ✈️ <span data-i18n="btn_send">Yuborish</span>
+            </button>
           </div>
-        </div>
-      </section>
+          <div id="insightsContainer" class="flex-1 overflow-y-auto space-y-3 pr-1">
+            <div class="flex items-center justify-center h-32 text-slate-500 text-xs">
+              Tahlil qilinmoqda...
+            </div>
+          </div>
+        </section>
+
+        <!-- Expenses Section -->
+        <section class="flex flex-col gap-2 bg-surface-light border border-slate-700/40 rounded-2xl p-4 overflow-hidden" style="height: 360px; min-height: 320px; flex-shrink: 0;">
+          <div class="flex items-center justify-between shrink-0">
+            <h2 class="text-sm font-bold text-slate-300 flex items-center gap-2">
+              <span>💸</span> <span data-i18n="admin_expenses">Chiqimlar</span>
+            </h2>
+            <div class="flex items-center gap-2">
+              <button onclick="openTransferModal()" type="button"
+                class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors shadow-sm flex items-center gap-1 active:scale-95">
+                🔄 <span data-i18n="btn_transfer_modal">Kartadan Naqdga</span>
+              </button>
+              <button onclick="openCashToCardModal()" type="button"
+                class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-teal-600 hover:bg-teal-500 text-white transition-colors shadow-sm flex items-center gap-1 active:scale-95">
+                🔄 <span data-i18n="btn_transfer_cash_to_card">Naqddan Kartaga</span>
+              </button>
+            </div>
+          </div>
+          <!-- Form -->
+          <form onsubmit="saveExpense(event)" class="grid grid-cols-2 gap-1.5 text-xs shrink-0">
+            <div class="col-span-2">
+              <input id="exp_title" placeholder="Chiqim nomi..." data-i18n="exp_title_ph" required class="w-full bg-surface border border-slate-600 rounded-lg px-3 py-1.5 outline-none text-slate-200 text-xs" />
+            </div>
+            <div>
+              <input id="exp_amount" type="number" step="any" min="0.01" placeholder="Summa..." data-i18n="exp_amount_ph" required class="w-full bg-surface border border-slate-600 rounded-lg px-3 py-1.5 outline-none text-slate-200 text-xs" />
+            </div>
+            <div>
+              <input id="exp_date" type="datetime-local" required class="w-full bg-surface border border-slate-600 rounded-lg px-1.5 py-1 outline-none text-slate-300 text-xs" />
+            </div>
+            <div class="col-span-2 flex items-center justify-between border border-slate-700/60 rounded-lg p-1 bg-surface shrink-0">
+              <span class="text-slate-400 pl-1 text-[10px]" data-i18n="lbl_payment_type">To'lov turi *</span>
+              <div class="flex gap-1">
+                <button type="button" id="exp_type_naqd_btn" onclick="setExpenseType('naqd')" class="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-600 text-white shadow transition-colors"><span data-i18n="pay_naqd_pul">💵 Naqd pul</span></button>
+                <button type="button" id="exp_type_karta_btn" onclick="setExpenseType('karta')" class="px-2 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-slate-200 transition-colors"><span data-i18n="pay_karta_pul">💳 Karta</span></button>
+              </div>
+            </div>
+            <button type="submit" class="col-span-2 py-1.5 rounded-lg font-bold bg-brand-600 hover:bg-brand-500 text-white transition-colors text-xs">
+              💾 <span data-i18n="btn_save_exp">Chiqimni saqlash</span>
+            </button>
+          </form>
+          <!-- List of recent expenses -->
+          <div class="flex-1 overflow-y-auto border border-slate-700/40 rounded-lg bg-surface text-[11px]" style="min-height: 120px;">
+            <table class="w-full text-left">
+              <thead class="sticky top-0 bg-surface z-10">
+                <tr class="border-b border-slate-700/40">
+                  <th class="px-2 py-1.5 text-slate-500 font-semibold text-[10px] uppercase">Vaqt</th>
+                  <th class="px-2 py-1.5 text-slate-500 font-semibold text-[10px] uppercase">Nomi</th>
+                  <th class="px-2 py-1.5 text-right text-slate-500 font-semibold text-[10px] uppercase">Summa</th>
+                  <th class="px-2 py-1.5 text-center text-slate-500 font-semibold text-[10px] uppercase">Amal</th>
+                </tr>
+              </thead>
+              <tbody id="expenseListBody" class="divide-y divide-slate-700/30"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Owner Usages Section -->
+        <section class="flex flex-col gap-2 bg-surface-light border border-slate-700/40 rounded-2xl p-4 overflow-hidden" style="height: 360px; min-height: 320px; flex-shrink: 0;">
+          <h2 class="text-sm font-bold text-slate-300 flex items-center gap-2 shrink-0">
+            <span>👤</span> <span data-i18n="admin_owner_usages">Oʻzim olganim</span>
+          </h2>
+          <!-- Form -->
+          <form onsubmit="saveOwnerUsage(event)" class="grid grid-cols-2 gap-1.5 text-xs shrink-0">
+            <div class="col-span-2">
+              <select id="usage_product_id" required class="w-full bg-surface border border-slate-600 rounded-lg px-3 py-1.5 outline-none text-slate-200 text-xs">
+                <option value="" data-i18n="usage_product_ph">-- Mahsulotni tanlang * --</option>
+              </select>
+            </div>
+            <div>
+              <input id="usage_quantity" type="number" min="1" placeholder="Miqdori..." data-i18n="usage_qty_ph" required class="w-full bg-surface border border-slate-600 rounded-lg px-3 py-1.5 outline-none text-slate-200 text-xs" />
+            </div>
+            <div>
+              <button type="submit" class="w-full py-1.5 rounded-lg font-bold bg-brand-600 hover:bg-brand-500 text-white transition-colors text-xs">
+                💾 <span data-i18n="btn_save_usage">Saqlash</span>
+              </button>
+            </div>
+          </form>
+          <!-- List of recent usages -->
+          <div class="flex-1 overflow-y-auto border border-slate-700/40 rounded-lg bg-surface text-[11px]" style="min-height: 120px;">
+            <table class="w-full text-left">
+              <thead class="sticky top-0 bg-surface z-10">
+                <tr class="border-b border-slate-700/40">
+                  <th class="px-2 py-1.5 text-slate-500 font-semibold text-[10px] uppercase">Vaqt</th>
+                  <th class="px-2 py-1.5 text-slate-500 font-semibold text-[10px] uppercase">Nomi</th>
+                  <th class="px-2 py-1.5 text-right text-slate-500 font-semibold text-[10px] uppercase">Tannarx</th>
+                  <th class="px-2 py-1.5 text-center text-slate-500 font-semibold text-[10px] uppercase">Amal</th>
+                </tr>
+              </thead>
+              <tbody id="ownerUsageListBody" class="divide-y divide-slate-700/30"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Debts Section -->
+        <section class="flex flex-col gap-2 bg-surface-light border border-slate-700/40 rounded-2xl p-4 overflow-hidden" style="height: 360px; min-height: 320px; flex-shrink: 0;">
+          <h2 class="text-sm font-bold text-slate-300 flex items-center gap-2 shrink-0">
+            <span>🤝</span> <span>Qarzlar (Nasiya)</span>
+          </h2>
+          <!-- Form -->
+          <form onsubmit="saveDebt(event)" class="grid grid-cols-2 gap-1.5 text-xs shrink-0">
+            <div class="col-span-2">
+              <input id="debt_customer_name" placeholder="Mijoz ismi *" required class="w-full bg-surface border border-slate-600 rounded-lg px-3 py-1.5 outline-none text-slate-200 text-xs" />
+            </div>
+            <div class="col-span-2">
+              <select id="debt_product_id" required class="w-full bg-surface border border-slate-600 rounded-lg px-3 py-1.5 outline-none text-slate-200 text-xs">
+                <option value="">-- Mahsulotni tanlang * --</option>
+              </select>
+            </div>
+            <div>
+              <input id="debt_quantity" type="number" min="1" placeholder="Miqdori *" value="1" required class="w-full bg-surface border border-slate-600 rounded-lg px-3 py-1.5 outline-none text-slate-200 text-xs" />
+            </div>
+            <div>
+              <input id="debt_amount" type="number" step="any" min="0" placeholder="Qarz summasi *" required class="w-full bg-surface border border-slate-600 rounded-lg px-3 py-1.5 outline-none text-slate-200 text-xs" />
+            </div>
+            <div class="col-span-2">
+              <button type="submit" class="w-full py-1.5 rounded-lg font-bold bg-brand-600 hover:bg-brand-500 text-white transition-colors text-xs">
+                💾 Qarz qo'shish
+              </button>
+            </div>
+          </form>
+          <!-- List of debts -->
+          <div class="flex-1 overflow-y-auto border border-slate-700/40 rounded-lg bg-surface text-[11px]" style="min-height: 120px;">
+            <table class="w-full text-left">
+              <thead class="sticky top-0 bg-surface z-10">
+                <tr class="border-b border-slate-700/40">
+                  <th class="px-2 py-1.5 text-slate-500 font-semibold text-[10px] uppercase">Ism/Vaqt</th>
+                  <th class="px-2 py-1.5 text-slate-500 font-semibold text-[10px] uppercase">Mahsulot</th>
+                  <th class="px-2 py-1.5 text-right text-slate-500 font-semibold text-[10px] uppercase">Summa</th>
+                  <th class="px-2 py-1.5 text-center text-slate-500 font-semibold text-[10px] uppercase">Holat</th>
+                  <th class="px-2 py-1.5 text-center text-slate-500 font-semibold text-[10px] uppercase">Amal</th>
+                </tr>
+              </thead>
+              <tbody id="debtListBody" class="divide-y divide-slate-700/30"></tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
 
     </div>
   </main>
@@ -214,22 +717,421 @@
   <!--                    REPORTS PANELI                            -->
   <!-- ============================================================ -->
   <main id="reportsView" class="flex-1 flex flex-col overflow-hidden hidden fade-in">
-    <section class="p-5 border-b border-slate-700/40 flex items-center justify-between shrink-0">
-      <h2 class="text-xl font-bold text-slate-100">📅 Hisobotlar (Kalendar)</h2>
-      <div class="flex items-center gap-4">
-        <button onclick="changeMonth(-1)" class="px-4 py-2 bg-surface border border-slate-600 rounded-xl hover:bg-slate-800 transition-colors">◀ Oldingi</button>
-        <div id="calendarMonthYear" class="text-lg font-bold min-w-[120px] text-center text-brand-300"></div>
-        <button onclick="changeMonth(1)" class="px-4 py-2 bg-surface border border-slate-600 rounded-xl hover:bg-slate-800 transition-colors">Keyingi ▶</button>
+    <section class="p-3 sm:p-5 border-b border-slate-700/40 flex flex-col sm:flex-row sm:items-center justify-between shrink-0 gap-3">
+      <h2 class="text-base sm:text-xl font-bold text-slate-100 text-center sm:text-left" data-i18n="rep_title">📅 Hisobotlar (Kalendar)</h2>
+      <div class="flex items-center gap-2 sm:gap-4 justify-between sm:justify-end w-full sm:w-auto">
+        <button onclick="changeMonth(-1)" class="px-2.5 py-1.5 sm:px-4 sm:py-2 bg-surface border border-slate-600 rounded-xl hover:bg-slate-800 transition-colors text-xs sm:text-sm whitespace-nowrap" data-i18n="rep_prev">◀ Oldingi</button>
+        <div id="calendarMonthYear" class="text-sm sm:text-lg font-bold min-w-[100px] sm:min-w-[120px] text-center text-brand-300"></div>
+        <button onclick="changeMonth(1)" class="px-2.5 py-1.5 sm:px-4 sm:py-2 bg-surface border border-slate-600 rounded-xl hover:bg-slate-800 transition-colors text-xs sm:text-sm whitespace-nowrap" data-i18n="rep_next">Keyingi ▶</button>
       </div>
     </section>
     
-    <section class="flex-1 p-5 overflow-auto bg-surface-light">
-      <div class="grid grid-cols-7 gap-3 text-center font-bold text-slate-400 mb-3 uppercase text-xs">
-        <div>Du</div><div>Se</div><div>Ch</div><div>Pa</div><div>Ju</div><div>Sh</div><div>Ya</div>
+    <section class="flex-1 p-2 sm:p-5 overflow-auto bg-surface-light">
+      <div class="grid grid-cols-7 gap-1 sm:gap-3 text-center font-bold text-slate-400 mb-3 uppercase text-[10px] sm:text-xs">
+        <div data-i18n="day_mon">Du</div>
+        <div data-i18n="day_tue">Se</div>
+        <div data-i18n="day_wed">Ch</div>
+        <div data-i18n="day_thu">Pa</div>
+        <div data-i18n="day_fri">Ju</div>
+        <div data-i18n="day_sat">Sh</div>
+        <div data-i18n="day_sun">Ya</div>
       </div>
-      <div id="calendarGrid" class="grid grid-cols-7 gap-3"></div>
+      <div id="calendarGrid" class="grid grid-cols-7 gap-1 sm:gap-3"></div>
     </section>
   </main>
+
+  
+  <!-- ============================================================ -->
+  <!--                   SOZLAMALAR PANELI                          -->
+  <!-- ============================================================ -->
+  <main id="settingsView" class="flex-1 flex flex-col overflow-hidden hidden fade-in">
+    <div class="p-5 overflow-auto flex-1 bg-surface-light">
+      <div class="max-w-4xl mx-auto space-y-6">
+        
+        <!-- Xavfsizlik Bloki -->
+        <div class="bg-surface rounded-2xl border border-slate-700/40 p-6 shadow-lg">
+          <h2 class="text-lg font-bold text-slate-100 mb-4 flex items-center gap-2"><span class="text-brand-400">🔒</span> <span data-i18n="set_security">Xavfsizlik</span></h2>
+          <form onsubmit="submitSecurity(event)" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="md:col-span-2">
+              <label class="block text-xs font-semibold text-slate-400 mb-1" data-i18n="set_cur_pass">Joriy parol (Tasdiqlash uchun) *</label>
+              <div class="relative">
+                <input id="secCurrentPassword" type="password" required class="w-full bg-surface-light border border-slate-600 rounded-xl px-4 py-3 outline-none text-slate-200 pr-12" placeholder="••••••••" />
+                <button type="button" onclick="togglePassword('secCurrentPassword')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200 transition-colors">
+                  <svg id="secCurrentPassword_eye" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                </button>
+              </div>
+            </div>
+            <div class="border-t border-slate-700/40 md:col-span-2 my-2"></div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1" data-i18n="set_new_login">Yangi Login (Ixtiyoriy)</label>
+              <input id="secNewUsername" data-i18n="set_new_login_ph" class="w-full bg-surface-light border border-slate-600 rounded-xl px-4 py-3 outline-none text-slate-200" placeholder="Yangi login..." />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 mb-1" data-i18n="set_new_pin">Yangi PIN-kod (Ixtiyoriy, 4 ta raqam)</label>
+              <input id="secNewPin" data-i18n="set_new_pin_ph" pattern="[0-9]{4}" maxlength="4" class="w-full bg-surface-light border border-slate-600 rounded-xl px-4 py-3 outline-none text-slate-200" placeholder="Yangi PIN..." />
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs font-semibold text-slate-400 mb-1" data-i18n="set_new_pass">Yangi Parol (Ixtiyoriy)</label>
+              <div class="relative">
+                <input id="secNewPassword" data-i18n="set_new_pass_ph" type="password" class="w-full bg-surface-light border border-slate-600 rounded-xl px-4 py-3 outline-none text-slate-200 pr-12" placeholder="Yangi parol..." />
+                <button type="button" onclick="togglePassword('secNewPassword')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200 transition-colors">
+                  <svg id="secNewPassword_eye" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                </button>
+              </div>
+            </div>
+            <div class="md:col-span-2 flex justify-end">
+              <button type="submit" class="px-6 py-3 rounded-xl font-bold bg-brand-600 hover:bg-brand-500 text-white transition-colors shadow-lg shadow-brand-700/30" data-i18n="set_save_sec">Xavfsizlikni yangilash</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Interfeys Bloki -->
+        <div class="bg-surface rounded-2xl border border-slate-700/40 p-6 shadow-lg">
+          <h2 class="text-lg font-bold text-slate-100 mb-6 flex items-center gap-2"><span class="text-emerald-400">🎨</span> <span data-i18n="set_interface">Interfeys sozlamalari</span></h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- Til tanlash -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-slate-300" data-i18n="set_lang">Tizim tili</label>
+              <p class="text-xs text-slate-500 pb-2" data-i18n="set_lang_desc">Dastur interfeysi qaysi tilda ko'rsatilishini tanlang.</p>
+              <select id="langSelect" onchange="changeLanguage(this.value)" class="w-full bg-surface-light border border-slate-600 rounded-xl px-4 py-3 outline-none text-slate-200 font-semibold">
+                <option value="uz">🇺🇿 O'zbekcha</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="ar">🇦🇪 العربية</option>
+                <option value="zh">🇨🇳 中文</option>
+                <option value="ko">🇰🇷 한국어</option>
+              </select>
+            </div>
+
+            <!-- Ekranni yaqinlashtirish (Zoom) -->
+            <div class="space-y-2">
+              <label class="block text-sm font-semibold text-slate-300" data-i18n="set_zoom">Ekranni yaqinlashtirish</label>
+              <p class="text-xs text-slate-500 pb-2" data-i18n="set_zoom_desc">Kassa yoki jadvallarni kattalashtirib ko'rish uchun sozlang.</p>
+              <div class="flex items-center gap-4 bg-surface-light border border-slate-600 rounded-xl px-4 py-3">
+                <button onclick="changeZoom(-5)" class="w-8 h-8 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold">-</button>
+                <input type="range" id="zoomSlider" min="80" max="150" step="5" value="100" oninput="applyZoom(this.value)" class="flex-1 accent-brand-500" />
+                <button onclick="changeZoom(5)" class="w-8 h-8 rounded bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold">+</button>
+                <span id="zoomValueDisplay" class="text-brand-300 font-bold min-w-[3rem] text-right">100%</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Dastur mavzusi (Dark / Light Mode) -->
+          <div class="mt-8 border-t border-slate-700/40 pt-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <label class="block text-sm font-semibold text-slate-300 mb-1" data-i18n="set_theme">Dastur mavzusi</label>
+                <p class="text-xs text-slate-500" data-i18n="set_theme_desc">Kunduzgi yoki tungi rejimni tanlang.</p>
+              </div>
+              <!-- Toggle Switch -->
+              <div class="flex items-center gap-3">
+                <span class="text-sm text-slate-400" data-i18n="set_theme_dark">🌙 Tungi</span>
+                <div class="theme-toggle-track" id="themeToggle" onclick="toggleTheme()" title="Mavzuni o'zgartirish">
+                  <div class="theme-toggle-thumb" id="themeThumb">☀️</div>
+                </div>
+                <span class="text-sm text-slate-400" data-i18n="set_theme_light">☀️ Kunduzgi</span>
+              </div>
+            </div>
+
+            <!-- Mode Cards -->
+            <div class="grid grid-cols-2 gap-3 mt-5">
+              <div class="theme-mode-card" id="themeCardDark" onclick="setTheme('dark')">
+                <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center text-xl flex-shrink-0">🌙</div>
+                <div>
+                  <div class="text-sm font-bold text-slate-200" data-i18n="set_theme_dark_title">Tungi rejim</div>
+                  <div class="text-xs text-slate-500 mt-0.5" data-i18n="set_theme_dark_desc">Ko'z uchun qulay, qorong'i fon</div>
+                </div>
+              </div>
+              <div class="theme-mode-card" id="themeCardLight" onclick="setTheme('light')">
+                <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center text-xl flex-shrink-0">☀️</div>
+                <div>
+                  <div class="text-sm font-bold text-slate-200" data-i18n="set_theme_light_title">Kunduzgi rejim</div>
+                  <div class="text-xs text-slate-500 mt-0.5" data-i18n="set_theme_light_desc">Yorqin, oq fon</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dastur haqida -->
+        <div class="bg-gradient-to-br from-surface to-surface-light rounded-2xl border border-brand-500/30 p-6 shadow-lg relative overflow-hidden">
+          <div class="absolute -right-4 -top-4 w-24 h-24 bg-brand-500/20 rounded-full blur-2xl pointer-events-none"></div>
+          <h2 class="text-lg font-bold text-slate-100 mb-4 flex items-center gap-2 relative z-10"><span class="text-sky-400">ℹ️</span> <span data-i18n="set_about">Dastur haqida</span></h2>
+          <div class="space-y-3 relative z-10">
+            <div class="flex justify-between border-b border-slate-700/50 pb-2">
+              <span class="text-slate-400 text-sm" data-i18n="set_dev">Ishlab chiquvchi:</span>
+              <span class="text-slate-200 font-semibold">Sodiqov Usmonjon</span>
+            </div>
+            <div class="flex justify-between border-b border-slate-700/50 pb-2">
+              <span class="text-slate-400 text-sm" data-i18n="set_phone">Aloqa uchun telefon:</span>
+              <span class="text-emerald-400 font-bold">+998 97 937 01 23</span>
+            </div>
+            <div class="flex justify-between pb-1">
+              <span class="text-slate-400 text-sm" data-i18n="set_version">Tizim versiyasi:</span>
+              <span class="text-slate-200 font-semibold">v1.0.0 (Avtomatlashtirilgan CRM)</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ============================================================ -->
+  <!--              SUPPLIER RETURN & EXCHANGE MODAL                -->
+  <!-- ============================================================ -->
+  <div id="returnModal" class="modal-bg hidden" onclick="if(event.target===this)closeReturnModal()">
+    <div class="bg-surface-light rounded-2xl w-full max-w-md p-6 space-y-5 border border-slate-700/50 shadow-2xl fade-in max-h-[90vh] overflow-y-auto">
+      <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">🔄 Yukni qaytarish va Almashtirish</h3>
+      
+      <!-- Tabs -->
+      <div class="flex gap-2 p-1 bg-surface rounded-xl border border-slate-700/40">
+        <button type="button" id="tabReturnMoneyBtn" onclick="switchReturnTab('money')" class="flex-1 py-1.5 rounded-lg text-sm font-bold bg-slate-700 text-white shadow-sm transition-colors">Pulni qaytarish</button>
+        <button type="button" id="tabExchangeBtn" onclick="switchReturnTab('exchange')" class="flex-1 py-1.5 rounded-lg text-sm font-bold text-slate-400 hover:text-slate-200 transition-colors">Almashtirish (Obmen)</button>
+      </div>
+
+      <!-- Tab 1: Money Return -->
+      <form id="returnForm" onsubmit="submitReturn(event)" class="space-y-4">
+        <input type="hidden" id="ret_expense_id" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Qaytarilayotgan mahsulot *</label>
+          <select id="ret_product_id" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none text-slate-200"></select>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Miqdor *</label>
+            <input id="ret_quantity" type="number" min="1" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Qaytarilgan pul (so'm) *</label>
+            <input id="ret_refund" type="number" step="any" min="0" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none" />
+          </div>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-brand-600 hover:bg-brand-500 text-white transition-colors">Tasdiqlash</button>
+          <button type="button" onclick="closeReturnModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors">Bekor qilish</button>
+        </div>
+      </form>
+
+      <!-- Tab 2: Exchange -->
+      <form id="exchangeForm" onsubmit="submitExchange(event)" class="space-y-4 hidden">
+        <input type="hidden" id="exc_expense_id" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Qaytarilayotgan mahsulot *</label>
+          <select id="exc_ret_product_id" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none text-slate-200"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Qaytarilayotgan miqdor *</label>
+          <input id="exc_ret_quantity" type="number" min="1" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none" />
+        </div>
+        <hr class="border-slate-700/50" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">O'rniga olingan yangi mahsulot *</label>
+          <select id="exc_new_product_id" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none text-slate-200"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">O'rniga olingan miqdor *</label>
+          <input id="exc_new_quantity" type="number" min="1" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Kassadan qo'shimcha to'lov (so'm)</label>
+          <input id="exc_additional_payment" type="number" step="any" min="0" value="0" class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none" />
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-sky-600 hover:bg-sky-500 text-white transition-colors">Almashtirish</button>
+          <button type="button" onclick="closeReturnModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors">Bekor qilish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--              EDIT EXPENSE MODAL                              -->
+  <!-- ============================================================ -->
+  <div id="editExpenseModal" class="modal-bg hidden" onclick="if(event.target===this)closeEditExpenseModal()">
+    <div class="bg-surface-light rounded-2xl w-full max-w-sm p-6 space-y-5 border border-slate-700/50 shadow-2xl fade-in">
+      <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">✏️ Chiqimni tahrirlash</h3>
+      <form id="editExpenseForm" onsubmit="submitEditExpense(event)" class="space-y-4">
+        <input type="hidden" id="edit_exp_id" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Chiqim nomi / sababi *</label>
+          <input id="edit_exp_title" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2 text-sm outline-none text-slate-200" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Summa *</label>
+          <input id="edit_exp_amount" type="number" step="any" min="0.01" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2 text-sm outline-none text-slate-200" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Vaqti *</label>
+          <input id="edit_exp_date" type="datetime-local" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2 text-sm outline-none text-slate-300" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1.5" data-i18n="lbl_payment_type">To'lov turi *</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="edit_exp_type_naqd_btn" onclick="setEditExpenseType('naqd')" class="py-2 rounded-xl text-sm font-bold bg-brand-600 text-white shadow transition-colors flex items-center justify-center gap-1">
+              <span data-i18n="pay_naqd_pul">💵 Naqd pul</span>
+            </button>
+            <button type="button" id="edit_exp_type_karta_btn" onclick="setEditExpenseType('karta')" class="py-2 rounded-xl text-sm font-bold text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1">
+              <span data-i18n="pay_karta_pul">💳 Karta</span>
+            </button>
+          </div>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-brand-600 hover:bg-brand-500 text-white transition-colors">Yangilash</button>
+          <button type="button" onclick="closeEditExpenseModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors">Bekor qilish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--              CARD TO CASH TRANSFER MODAL                    -->
+  <!-- ============================================================ -->
+  <div id="transferModal" class="modal-bg hidden" onclick="if(event.target===this)closeTransferModal()">
+    <div class="bg-surface-light rounded-2xl w-full max-w-sm p-6 space-y-5 border border-slate-700/50 shadow-2xl fade-in">
+      <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2" data-i18n="transfer_modal_title">🔄 Pul koʻchirish (Kartadan Naqdga)</h3>
+      <form id="transferForm" onsubmit="submitTransfer(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1" data-i18n="transfer_amount_lbl">Oʻtkaziladigan summa (soʻm) *</label>
+          <input id="transfer_amount" type="number" step="any" min="0.01" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2 text-sm outline-none text-slate-200" placeholder="0.00" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1" data-i18n="transfer_desc_lbl">Izoh / Sabab</label>
+          <input id="transfer_description" class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2 text-sm outline-none text-slate-200" data-i18n="transfer_desc_ph" placeholder="Masalan: Bankomatdan naqdlashtirildi" />
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-brand-600 hover:bg-brand-500 text-white transition-colors flex items-center justify-center gap-1">
+            <span data-i18n="transfer_confirm_btn">🔄 Oʻtkazishni tasdiqlash</span>
+          </button>
+          <button type="button" onclick="closeTransferModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors" data-i18n="transfer_cancel_btn">Bekor qilish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--              CASH TO CARD TRANSFER MODAL                    -->
+  <!-- ============================================================ -->
+  <div id="transferCashToCardModal" class="modal-bg hidden" onclick="if(event.target===this)closeCashToCardModal()">
+    <div class="bg-surface-light rounded-2xl w-full max-w-sm p-6 space-y-5 border border-slate-700/50 shadow-2xl fade-in">
+      <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2" data-i18n="transfer_c2c_modal_title">🔄 Pul ko'chirish (Naqddan Kartaga)</h3>
+      <form id="transferCashToCardForm" onsubmit="submitCashToCardTransfer(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1" data-i18n="transfer_amount_lbl">O'tkaziladigan summa (so'm) *</label>
+          <input id="transfer_c2c_amount" type="number" step="any" min="0.01" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2 text-sm outline-none text-slate-200" placeholder="0.00" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1" data-i18n="transfer_desc_lbl">Izoh / Sabab</label>
+          <input id="transfer_c2c_description" class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2 text-sm outline-none text-slate-200" data-i18n="transfer_c2c_desc_ph" placeholder="Masalan: Naqd pul kartaga tashlandi" />
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-teal-600 hover:bg-teal-500 text-white transition-colors flex items-center justify-center gap-1">
+            <span data-i18n="transfer_confirm_btn">✅ O'tkazishni tasdiqlash</span>
+          </button>
+          <button type="button" onclick="closeCashToCardModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors" data-i18n="transfer_cancel_btn">Bekor qilish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--              EDIT OWNER USAGE MODAL                         -->
+  <!-- ============================================================ -->
+  <div id="editOwnerUsageModal" class="modal-bg hidden" onclick="if(event.target===this)closeEditOwnerUsageModal()">
+    <div class="bg-surface-light rounded-2xl w-full max-w-sm p-6 space-y-5 border border-slate-700/50 shadow-2xl fade-in">
+      <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">✏️ O'zim olganimni tahrirlash</h3>
+      <form id="editOwnerUsageForm" onsubmit="submitEditOwnerUsage(event)" class="space-y-4">
+        <input type="hidden" id="edit_ou_id" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1" data-i18n="usage_product_ph">Mahsulotni tanlang *</label>
+          <select id="edit_ou_product_id" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2 text-sm outline-none text-slate-200">
+            <!-- Will be populated dynamically -->
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Miqdori *</label>
+          <input id="edit_ou_quantity" type="number" min="1" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2 text-sm outline-none text-slate-200" />
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-brand-600 hover:bg-brand-500 text-white transition-colors">Saqlash</button>
+          <button type="button" onclick="closeEditOwnerUsageModal()" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors">Bekor qilish</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--              EDIT DEBT MODAL                                 -->
+  <!-- ============================================================ -->
+  <div id="editDebtModal" class="modal-bg hidden" style="z-index: 60;" onclick="if(event.target===this)closeEditDebtModal()">
+    <div class="bg-surface-light rounded-2xl w-full max-w-sm p-6 space-y-5 border border-slate-700/50 shadow-2xl fade-in">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+          <span>✏️</span> <span>Qarzni tahrirlash</span>
+        </h3>
+        <button onclick="closeEditDebtModal()" class="text-slate-400 hover:text-white transition-colors text-xl leading-none">&times;</button>
+      </div>
+      <form onsubmit="saveEditDebt(event)" class="space-y-3">
+        <input type="hidden" id="edit_debt_id" />
+        <input type="hidden" id="edit_debt_product_id" />
+        
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Mijoz ismi</label>
+          <input id="edit_debt_customer_name" required class="w-full bg-surface border border-slate-600 rounded-lg px-3 py-2 outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-slate-200 transition-all" />
+        </div>
+        
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Miqdori</label>
+            <input id="edit_debt_quantity" type="number" min="1" required class="w-full bg-surface border border-slate-600 rounded-lg px-3 py-2 outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-slate-200 transition-all" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Qarz summasi</label>
+            <input id="edit_debt_amount" type="number" step="any" min="0" required class="w-full bg-surface border border-slate-600 rounded-lg px-3 py-2 outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 text-slate-200 transition-all" />
+          </div>
+        </div>
+
+        <button type="submit" class="w-full mt-2 bg-brand-600 hover:bg-brand-500 text-white font-bold py-2 rounded-xl transition-all shadow-lg active:scale-[0.98]">
+          Saqlash
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--              PAY DEBT MODAL                                  -->
+  <!-- ============================================================ -->
+  <div id="payDebtModal" class="modal-bg hidden" onclick="if(event.target===this)closePayDebtModal()">
+    <div class="bg-surface-light rounded-2xl w-full max-w-sm p-6 space-y-5 border border-slate-700/50 shadow-2xl fade-in">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+          <span>✅</span> <span>To'lov qabul qilish</span>
+        </h3>
+        <button onclick="closePayDebtModal()" class="text-slate-400 hover:text-white transition-colors text-xl leading-none">&times;</button>
+      </div>
+      <div class="text-slate-300 text-sm">
+        Qarz miqdori: <span id="pay_debt_amount_display" class="font-bold text-white"></span> so'm
+      </div>
+      <form onsubmit="submitPayDebt(event)" class="space-y-4">
+        <input type="hidden" id="pay_debt_id" />
+        
+        <div>
+          <label class="block text-xs text-slate-400 mb-2">To'lov usulini tanlang:</label>
+          <div class="flex gap-2">
+            <button type="button" id="pay_debt_naqd_btn" onclick="setPayDebtType('naqd')" class="flex-1 py-2 rounded-lg font-bold bg-brand-600 text-white transition-colors border border-brand-500">💵 Naqd</button>
+            <button type="button" id="pay_debt_karta_btn" onclick="setPayDebtType('karta')" class="flex-1 py-2 rounded-lg font-bold bg-surface text-slate-300 transition-colors border border-slate-600">💳 Karta</button>
+          </div>
+          <input type="hidden" id="pay_debt_type" value="naqd" />
+        </div>
+
+        <button type="submit" class="w-full mt-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl transition-all shadow-lg active:scale-[0.98]">
+          Tasdiqlash
+        </button>
+      </form>
+    </div>
+  </div>
 
   <!-- ============================================================ -->
   <!--              PRODUCT ADD / EDIT MODAL                        -->
@@ -242,6 +1144,10 @@
         <div>
           <label class="block text-xs font-semibold text-slate-400 mb-1">Nomi *</label>
           <input id="pf_name" required class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Rasm linki (URL) (Ixtiyoriy)</label>
+          <input id="pf_image" type="url" placeholder="https://..." class="w-full bg-surface border border-slate-600 rounded-xl px-4 py-2.5 text-sm outline-none text-slate-200" />
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
@@ -280,18 +1186,87 @@
         <h3 id="dailySalesTitle" class="text-xl font-bold text-slate-100"></h3>
         <button onclick="closeDailySalesModal()" class="text-slate-400 hover:text-white text-2xl leading-none">&times;</button>
       </div>
-      <div class="flex-1 overflow-auto rounded-xl border border-slate-700/40 bg-surface">
+      <div class="flex-1 overflow-auto rounded-xl border border-slate-700/40 bg-surface min-h-[150px]">
         <table class="w-full text-sm">
           <thead class="bg-surface-lighter/60 text-slate-400 text-[11px] uppercase tracking-wider sticky top-0 z-10">
             <tr>
               <th class="text-left px-4 py-3">Vaqti</th>
-              <th class="text-left px-4 py-3">Mahsulotlar</th>
-              <th class="text-right px-4 py-3">Tushum</th>
-              <th class="text-right px-4 py-3">Foyda</th>
+              <th class="text-left px-4 py-3">Mahsulot</th>
+              <th class="text-right px-4 py-3">Miqdor</th>
+              <th class="text-right px-4 py-3">Narxi</th>
+              <th class="text-right px-4 py-3">Jami</th>
+              <th class="text-center px-4 py-3">Amallar</th>
             </tr>
           </thead>
           <tbody id="dailySalesBody" class="divide-y divide-slate-700/30"></tbody>
         </table>
+      </div>
+
+      <!-- Expenses Part -->
+      <div class="shrink-0 space-y-2">
+        <h4 class="text-sm font-bold text-slate-300 flex items-center justify-between">
+          <span>💸 Ushbu kungi chiqimlar</span>
+          <span id="dailyExpensesTotal" class="text-xs bg-red-900/40 text-red-400 px-2 py-0.5 rounded-full">0 so'm</span>
+        </h4>
+        <div class="max-h-[150px] overflow-auto rounded-xl border border-slate-700/40 bg-surface">
+          <table class="w-full text-sm">
+            <thead class="bg-surface-lighter/60 text-slate-400 text-[11px] uppercase tracking-wider sticky top-0 z-10">
+              <tr>
+                <th class="text-left px-4 py-2">Vaqti</th>
+                <th class="text-left px-4 py-2">Nomi / Sababi</th>
+                <th class="text-right px-4 py-2">Summa</th>
+              </tr>
+            </thead>
+            <tbody id="dailyExpensesBody" class="divide-y divide-slate-700/30"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Owner Usages Part -->
+      <div id="dailyOwnerUsagesPart" class="shrink-0 space-y-2 hidden">
+        <h4 class="text-sm font-bold text-slate-300 flex items-center justify-between">
+          <span>👤 O'zim olganlarim (Tannarx bo'yicha)</span>
+          <span id="dailyOwnerUsagesTotal" class="text-xs bg-sky-900/40 text-sky-400 px-2 py-0.5 rounded-full">0 so'm</span>
+        </h4>
+        <div class="max-h-[120px] overflow-auto rounded-xl border border-slate-700/40 bg-surface">
+          <table class="w-full text-sm">
+            <thead class="bg-surface-lighter/60 text-slate-400 text-[11px] uppercase tracking-wider sticky top-0 z-10">
+              <tr>
+                <th class="text-left px-4 py-2">Vaqti</th>
+                <th class="text-left px-4 py-2">Mahsulot</th>
+                <th class="text-right px-4 py-2">Miqdor</th>
+                <th class="text-right px-4 py-2">Tannarxi (Jami)</th>
+              </tr>
+            </thead>
+            <tbody id="dailyOwnerUsagesBody" class="divide-y divide-slate-700/30"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Summary Part -->
+      <div class="shrink-0 bg-surface border border-slate-700/40 p-4 rounded-xl">
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 text-center sm:divide-x divide-slate-700/40">
+          <div>
+            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1" data-i18n="rep_sales">Jami Sotuv</div>
+            <div id="dailySummarySales" class="text-sm font-bold text-slate-200">0</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1" data-i18n="admin_expenses">Chiqim</div>
+            <div id="dailySummaryExpenses" class="text-sm font-bold text-red-400">0</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1" data-i18n="rep_cash_bal">Naqd Qoldiq</div>
+            <div id="dailySummaryRevenue" class="text-sm font-bold text-emerald-400">0</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1" data-i18n="rep_card_bal">Karta Qoldiq</div>
+            <div id="dailySummaryCard" class="text-sm font-bold text-blue-400">0</div>
+          </div>
+          <div>
+            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1" data-i18n="rep_profit">Sof Foyda</div>
+            <div id="dailySummaryProfit" class="text-sm font-bold text-sky-400">0</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -301,16 +1276,465 @@
   <!-- ============================================================ -->
   <script>
   /* ------------------------------------------------------------------ */
-  /*  STATE                                                             */
+  
   /* ------------------------------------------------------------------ */
+  /*  AUTHENTICATION                                                    */
+  /* ------------------------------------------------------------------ */
+  let currentPin = '';
+
+  function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const eyeIcon = document.getElementById(inputId + '_eye');
+    if (!input || !eyeIcon) return;
+    if (input.type === 'password') {
+      input.type = 'text';
+      eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>`;
+    } else {
+      input.type = 'password';
+      eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>`;
+    }
+  }
+
+  function checkAuth() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      showLogin();
+      return;
+    }
+    // Attempt to load profile
+    api('/api/auth/me').then(data => {
+      $('headerShopName').textContent = data.shop_name;
+      $('appContainer').classList.remove('hidden');
+      $('authContainer').classList.add('hidden');
+      
+      // Load user settings
+      api('/api/settings').then(settings => {
+        if(settings) {
+          if (settings.language) applyLanguage(settings.language);
+          if (settings.theme) applyTheme(settings.theme);
+          if (settings.zoom) applyZoom(settings.zoom);
+        }
+      }).catch(e => console.error("Failed to load settings", e));
+
+      switchTab('kassa');
+    }).catch(e => {
+      showLogin();
+    });
+  }
+
+  function showLogin() {
+    $('appContainer').classList.add('hidden');
+    $('authContainer').classList.remove('hidden');
+    $('loginView').classList.remove('hidden');
+    $('registerView').classList.add('hidden');
+    
+    if($('tabLogin')) {
+      $('tabLogin').className = "flex-1 pb-3 text-sm font-bold text-white border-b-2 border-cyan-400 transition-colors";
+      $('tabRegister').className = "flex-1 pb-3 text-sm font-bold text-slate-500 border-b-2 border-transparent hover:text-slate-300 transition-colors";
+    }
+    clearPin();
+  }
+
+  function showRegister() {
+    $('loginView').classList.add('hidden');
+    $('registerView').classList.remove('hidden');
+    
+    if($('tabRegister')) {
+      $('tabRegister').className = "flex-1 pb-3 text-sm font-bold text-white border-b-2 border-cyan-400 transition-colors";
+      $('tabLogin').className = "flex-1 pb-3 text-sm font-bold text-slate-500 border-b-2 border-transparent hover:text-slate-300 transition-colors";
+    }
+  }
+
+  function togglePinPad() {
+    const el = $('pinPadContainer');
+    if (el.classList.contains('hidden')) {
+      el.classList.remove('hidden');
+    } else {
+      el.classList.add('hidden');
+      clearPin();
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('token');
+    showLogin();
+  }
+
+  async function submitLogin(e) {
+    e.preventDefault();
+    const u = $('loginUsername').value;
+    const p = $('loginPassword').value;
+    try {
+      const res = await api('/api/auth/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username: u, password: p})
+      });
+      localStorage.setItem('token', res.access_token);
+      checkAuth();
+    } catch(e) {}
+  }
+
+  async function submitRegister(e) {
+    e.preventDefault();
+    const shop = $('regShopName').value;
+    const u = $('regUsername').value;
+    const p = $('regPassword').value;
+    const pin = $('regPin').value;
+    try {
+      const res = await api('/api/auth/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({shop_name: shop, username: u, password: p, pincode: pin})
+      });
+      localStorage.setItem('token', res.access_token);
+      toast("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
+      checkAuth();
+    } catch(e) {}
+  }
+
+  function updatePinDots() {
+    for (let i = 1; i <= 4; i++) {
+      const dot = $('pinDot' + i);
+      if (i <= currentPin.length) {
+        dot.classList.remove('bg-transparent', 'border-slate-600');
+        dot.classList.add('bg-brand-500', 'border-brand-500');
+      } else {
+        dot.classList.remove('bg-brand-500', 'border-brand-500');
+        dot.classList.add('bg-transparent', 'border-slate-600');
+      }
+    }
+  }
+
+  function addPin(num) {
+    if (currentPin.length < 4) {
+      currentPin += num;
+      updatePinDots();
+      if (currentPin.length === 4) {
+        submitQuickLogin();
+      }
+    }
+  }
+
+  function removePin() {
+    if (currentPin.length > 0) {
+      currentPin = currentPin.slice(0, -1);
+      updatePinDots();
+    }
+  }
+
+  function clearPin() {
+    currentPin = '';
+    updatePinDots();
+  }
+
+  async function submitQuickLogin() {
+    try {
+      const res = await api('/api/auth/quick-login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({pincode: currentPin})
+      });
+      localStorage.setItem('token', res.access_token);
+      checkAuth();
+    } catch(e) {
+      clearPin();
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if(!$('authContainer').classList.contains('hidden') && !$('loginView').classList.contains('hidden')) {
+        if(e.key >= '0' && e.key <= '9' && document.activeElement.tagName !== 'INPUT') {
+            addPin(e.key);
+        } else if (e.key === 'Backspace' && document.activeElement.tagName !== 'INPUT') {
+            removePin();
+        }
+    }
+  });  
+
+  let tDict = {};
+
+  let currentLang = localStorage.getItem('appLang') || 'uz';
+  let currentZoom = localStorage.getItem('appZoom') || '100';
+
+  async function applyLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('appLang', lang);
+    
+    if (lang === 'ar') {
+      document.documentElement.dir = 'rtl';
+    } else {
+      document.documentElement.dir = 'ltr';
+    }
+
+    if (!tDict[lang]) {
+      try {
+        const res = await fetch(`/locales/${lang}.json`);
+        if (res.ok) {
+          tDict[lang] = await res.json();
+        }
+      } catch (e) {
+        console.error("Failed to load translation", e);
+      }
+    }
+
+    const dict = tDict[lang] || {};
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key]) {
+        if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          el.placeholder = dict[key];
+        } else {
+          el.innerHTML = dict[key];
+        }
+      }
+    });
+    $('langSelect').value = lang;
+    if (typeof allProducts !== 'undefined' && allProducts.length) {
+      populateUsageProductDropdown();
+    }
+
+    if (typeof currentMonth !== 'undefined') {
+      renderCalendarHeader();
+      if ($('reportsView') && !$('reportsView').classList.contains('hidden')) {
+        loadCalendarData();
+      }
+    }
+  }
+
+  async function changeLanguage(lang) {
+    await applyLanguage(lang);
+    saveSettings();
+    toast("Til o'zgartirildi");
+  }
+
+  async function saveSettings() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      await api('/api/settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          language: currentLang,
+          theme: currentTheme,
+          zoom: currentZoom.toString()
+        })
+      });
+    } catch (e) {
+      console.error("Failed to save settings", e);
+    }
+  }
+
+  function applyZoom(val) {
+    currentZoom = val;
+    localStorage.setItem('appZoom', val);
+    $('zoomSlider').value = val;
+    $('zoomValueDisplay').textContent = val + '%';
+    document.documentElement.style.fontSize = (16 * (val / 100)) + 'px';
+  }
+
+  function changeZoom(delta) {
+    let v = parseInt($('zoomSlider').value) + delta;
+    if (v < 80) v = 80;
+    if (v > 150) v = 150;
+    applyZoom(v);
+    saveSettings();
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  THEME (Dark / Light Mode)                                          */
+  /* ------------------------------------------------------------------ */
+  let currentTheme = localStorage.getItem('appTheme') || 'dark';
+
+  function applyTheme(theme) {
+    currentTheme = theme;
+    localStorage.setItem('appTheme', theme);
+    const body = document.body;
+    const thumb = $('themeThumb');
+    const cardDark = $('themeCardDark');
+    const cardLight = $('themeCardLight');
+
+    if (theme === 'light') {
+      body.classList.add('light-mode');
+      if (thumb) thumb.textContent = '🌙';
+    } else {
+      body.classList.remove('light-mode');
+      if (thumb) thumb.textContent = '☀️';
+    }
+
+    if (cardDark) {
+      cardDark.classList.toggle('selected', theme === 'dark');
+      cardLight.classList.toggle('selected', theme === 'light');
+    }
+  }
+
+  function toggleTheme() {
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  }
+
+  function setTheme(theme) {
+    applyTheme(theme);
+    saveSettings();
+    const labels = { 'uz': "Mavzu o'zgartirildi", 'ru': "Тема изменена", 'en': "Theme changed", 'ar': "تم تغيير المظهر", 'zh': "主题已更改", 'ko': "테마가 변경되었습니다" };
+    toast(labels[currentLang] || labels['uz']);
+  }
+
+  async function submitSecurity(e) {
+    e.preventDefault();
+    const curPass = $('secCurrentPassword').value;
+    const nLog = $('secNewUsername').value.trim() || null;
+    const nPin = $('secNewPin').value.trim() || null;
+    const nPass = $('secNewPassword').value || null;
+    
+    try {
+      const res = await api('/api/user/update-security', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ current_password: curPass, new_username: nLog, new_pincode: nPin, new_password: nPass })
+      });
+      toast(res.message);
+      $('secCurrentPassword').value = '';
+      $('secNewUsername').value = '';
+      $('secNewPin').value = '';
+      $('secNewPassword').value = '';
+    } catch(err) {}
+  }
+
+  const originalSwitchTab = switchTab;
+  window.switchTab = function(tab) {
+    const views = ['kassa', 'admin', 'reports', 'settings'];
+    views.forEach(v => {
+      const vEl = $(v + 'View');
+      if (vEl) {
+        const isShowing = tab === v;
+        vEl.classList.toggle('hidden', !isShowing);
+        if (isShowing) {
+          vEl.classList.remove('fade-in');
+          void vEl.offsetWidth; // force reflow
+          vEl.classList.add('fade-in');
+        }
+      }
+      const btn = $('tab' + v.charAt(0).toUpperCase() + v.slice(1));
+      if (btn) {
+        btn.classList.toggle('active', tab === v);
+        btn.classList.toggle('text-slate-100', tab === v);
+        btn.classList.toggle('text-slate-400', tab !== v);
+      }
+    });
+
+    if (tab === 'kassa') loadProducts($('kassaSearch').value.trim());
+    else if (tab === 'admin') { loadAdminProducts(); loadDashboard(); loadInsights(); loadExpenses(); setExpenseTime(); loadOwnerUsages(); loadDebts(); }
+    else if (tab === 'reports') { initCalendar(); }
+  };
+
   let allProducts = [];
   let cart = [];           // { product, quantity }
+  let selectedPaymentType = 'naqd';
+
+  function getCartTotal() {
+    return cart.reduce((s, c) => s + c.product.price * c.quantity, 0);
+  }
+
+  function setPaymentType(type) {
+    selectedPaymentType = type;
+    const naqdBtn = $('payNaqdBtn');
+    const kartaBtn = $('payKartaBtn');
+    const aralashBtn = $('payAralashBtn');
+    const splitContainer = $('splitInputsContainer');
+
+    const inactiveClass = "flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl border border-slate-700/60 bg-transparent text-slate-400 font-semibold text-xs transition-all hover:bg-slate-800/40 dark:hover:bg-slate-800/40 focus:outline-none";
+
+    if (naqdBtn) naqdBtn.className = inactiveClass;
+    if (kartaBtn) kartaBtn.className = inactiveClass;
+    if (aralashBtn) aralashBtn.className = inactiveClass;
+
+    if (type === 'naqd') {
+      if (naqdBtn) naqdBtn.className = "flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl border border-emerald-500 bg-emerald-500/10 text-emerald-400 font-bold text-xs transition-all focus:outline-none";
+      if (splitContainer) splitContainer.classList.add('hidden');
+    } else if (type === 'karta') {
+      if (kartaBtn) kartaBtn.className = "flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl border border-brand-500 bg-brand-500/10 text-brand-400 font-bold text-xs transition-all focus:outline-none";
+      if (splitContainer) splitContainer.classList.add('hidden');
+    } else if (type === 'aralash') {
+      if (aralashBtn) aralashBtn.className = "flex flex-col sm:flex-row items-center justify-center gap-1 py-2 px-1 rounded-xl border border-sky-500 bg-sky-500/10 text-sky-400 font-bold text-xs transition-all focus:outline-none";
+      if (splitContainer) {
+        splitContainer.classList.remove('hidden');
+        $('splitCashAmount').value = getCartTotal();
+        $('splitCardAmount').value = 0;
+      }
+    }
+    validateSplitAmounts();
+  }
+
+  function handleSplitInput(source) {
+    const total = getCartTotal();
+    const cashInput = $('splitCashAmount');
+    const cardInput = $('splitCardAmount');
+    if (!cashInput || !cardInput) return;
+
+    let cashVal = parseFloat(cashInput.value) || 0;
+    let cardVal = parseFloat(cardInput.value) || 0;
+
+    if (source === 'cash') {
+      if (cashVal < 0) cashVal = 0;
+      if (cashVal > total) cashVal = total;
+      cashInput.value = cashVal;
+      cardInput.value = total - cashVal;
+    } else if (source === 'card') {
+      if (cardVal < 0) cardVal = 0;
+      if (cardVal > total) cardVal = total;
+      cardInput.value = cardVal;
+      cashInput.value = total - cardVal;
+    }
+    validateSplitAmounts();
+  }
+
+  function validateSplitAmounts() {
+    const total = getCartTotal();
+    const cashVal = parseFloat($('splitCashAmount').value) || 0;
+    const cardVal = parseFloat($('splitCardAmount').value) || 0;
+    const btn = document.querySelector('button[onclick="submitSale()"]');
+    const feedback = $('splitFeedback');
+
+    if (selectedPaymentType === 'aralash') {
+      const diff = Math.abs((cashVal + cardVal) - total);
+      if (diff > 0.02) {
+        if (btn) btn.disabled = true;
+        if (btn) btn.classList.add('opacity-50', 'pointer-events-none');
+        if (feedback) {
+          feedback.textContent = `Summa xato: ${fmt(cashVal + cardVal)} / Jami: ${fmt(total)}`;
+          feedback.classList.remove('hidden');
+        }
+      } else {
+        if (btn) btn.disabled = false;
+        if (btn) btn.classList.remove('opacity-50', 'pointer-events-none');
+        if (feedback) {
+          feedback.classList.add('hidden');
+        }
+      }
+    } else {
+      if (btn) btn.disabled = false;
+      if (btn) btn.classList.remove('opacity-50', 'pointer-events-none');
+      if (feedback) feedback.classList.add('hidden');
+    }
+  }
 
   /* ------------------------------------------------------------------ */
   /*  HELPERS                                                           */
   /* ------------------------------------------------------------------ */
   const $ = (id) => document.getElementById(id);
   const fmt = (n) => Number(n).toLocaleString('uz-UZ') + ' soʻm';
+  function esc(s) {
+    if (!s) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/'/g, '&#39;')
+      .replace(/"/g, '&quot;');
+  }
 
   function toast(msg, type = 'success') {
     const t = $('toast');
@@ -321,7 +1745,16 @@
 
   async function api(path, opts = {}) {
     try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        opts.headers = opts.headers || {};
+        opts.headers['Authorization'] = `Bearer ${token}`;
+      }
       const res = await fetch(path, opts);
+      if (res.status === 401) {
+        logout();
+        throw new Error('Sessiya tugadi, qaytadan kiring');
+      }
       let data;
       const text = await res.text();
       try { data = JSON.parse(text); } catch { data = null; }
@@ -358,7 +1791,7 @@
     });
 
     if (tab === 'kassa') loadProducts();
-    else if (tab === 'admin') { loadAdminProducts(); loadDashboard(); loadInsights(); }
+    else if (tab === 'admin') { loadAdminProducts(); loadDashboard(); loadInsights(); loadExpenses(); setExpenseTime(); loadOwnerUsages(); loadDebts(); }
     else if (tab === 'reports') { initCalendar(); }
   }
 
@@ -377,7 +1810,7 @@
   }
 
   /* ------------------------------------------------------------------ */
-  /*  KASSA – PRODUCT GRID                                              */
+  /*  KASSA - PRODUCT GRID                                              */
   /* ------------------------------------------------------------------ */
   function renderKassaProducts() {
     const el = $('kassaProducts');
@@ -388,17 +1821,21 @@
     el.innerHTML = allProducts.map(p => `
       <button onclick="addToCart(${p.id})"
         class="bg-surface-light border border-slate-700/40 rounded-xl p-3 text-left card-hover flex flex-col gap-1 ${p.stock <= 0 ? 'opacity-40 pointer-events-none' : ''}">
-        <span class="text-sm font-semibold truncate">${esc(p.name)}</span>
-        <span class="text-xs text-slate-500">${p.barcode || '—'}</span>
-        <div class="mt-auto flex items-end justify-between">
-          <span class="text-brand-400 font-bold text-sm">${fmt(p.price)}</span>
+        <div class="flex items-start gap-2 w-full">
+          ${p.image_url ? `<img src="${p.image_url}" class="w-10 h-10 object-cover rounded shadow-sm border border-slate-700 shrink-0" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">` : ''}
+          <div class="w-10 h-10 rounded border border-slate-700 bg-slate-800 shrink-0 items-center justify-center text-[8px] text-slate-500 text-center flex" style="${p.image_url ? 'display:none;' : ''}">Rasm<br>yo'q</div>
+          <div class="flex flex-col flex-1 min-w-0">
+            <span class="text-[13px] sm:text-sm font-bold leading-tight break-words line-clamp-2 w-full text-slate-200" title="${esc(p.name)}">${esc(p.name)}</span>
+            <span class="text-[10px] sm:text-xs text-slate-500 truncate w-full mt-0.5">${p.barcode || '-'}</span>
+          </div>
+        </div>
+        <div class="mt-auto flex items-end justify-between w-full pt-1">
+          <span class="text-brand-400 font-bold text-[13px] sm:text-sm">${fmt(p.price)}</span>
           <span class="text-[10px] px-1.5 py-0.5 rounded-md ${p.stock > 0 ? 'bg-emerald-900/40 text-emerald-400' : 'bg-red-900/40 text-red-400'}">${p.stock} dona</span>
         </div>
       </button>
     `).join('');
   }
-
-  function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
   /* ------------------------------------------------------------------ */
   /*  CART                                                               */
@@ -436,13 +1873,19 @@
   function renderCart() {
     const el = $('cartItems');
     $('cartCount').textContent = cart.reduce((s, c) => s + c.quantity, 0);
-    const total = cart.reduce((s, c) => s + c.product.price * c.quantity, 0);
+    const total = getCartTotal();
     $('cartTotal').textContent = fmt(total);
 
     if (!cart.length) {
       el.innerHTML = '<p class="text-center text-slate-600 py-12 text-sm">Savat bo\'sh</p>';
       return;
     }
+
+    if (selectedPaymentType === 'aralash') {
+      $('splitCashAmount').value = total;
+      $('splitCardAmount').value = 0;
+    }
+    validateSplitAmounts();
     el.innerHTML = cart.map(c => `
       <div class="flex items-center gap-3 bg-surface rounded-xl p-3 border border-slate-700/30 fade-in">
         <div class="flex-1 min-w-0">
@@ -467,13 +1910,20 @@
     if (!cart.length) { toast('Savat bo\'sh', 'error'); return; }
     const items = cart.map(c => ({ product_id: c.product.id, quantity: c.quantity }));
     const created_at = $('saleDateTime').value || null;
+    let cash_amount = 0.0;
+    let card_amount = 0.0;
+    if (selectedPaymentType === 'aralash') {
+      cash_amount = parseFloat($('splitCashAmount').value) || 0.0;
+      card_amount = parseFloat($('splitCardAmount').value) || 0.0;
+    }
     const result = await api('/api/sales', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items, created_at }),
+      body: JSON.stringify({ items, created_at, payment_type: selectedPaymentType, cash_amount, card_amount }),
     });
     toast(`Sotuv #${result.id} — ${fmt(result.total_amount)}`);
     cart = [];
+    setPaymentType('naqd');
     setCurrentTime();
     renderCart();
     loadProducts($('kassaSearch').value.trim());
@@ -491,31 +1941,37 @@
     }
     el.innerHTML = allProducts.map((p, i) => `
       <tr class="hover:bg-slate-800/40 transition-colors">
-        <td class="px-4 py-3 text-slate-500">${i + 1}</td>
-        <td class="px-4 py-3 font-semibold">${esc(p.name)}</td>
-        <td class="px-4 py-3 text-right text-emerald-400">${fmt(p.price)}</td>
-        <td class="px-4 py-3 text-right text-slate-400">${fmt(p.cost_price)}</td>
-        <td class="px-4 py-3 text-right">
+        <td class="px-4 py-3 text-slate-500 align-middle">${i + 1}</td>
+        <td class="px-4 py-3 text-center align-middle">
+          ${p.image_url ? `<img src="${p.image_url}" class="w-12 h-12 object-cover rounded-md border border-slate-700 shadow-sm mx-auto" alt="img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">` : ''}
+          <div class="w-12 h-12 rounded-md border border-slate-700 bg-slate-800 items-center justify-center mx-auto text-[10px] text-slate-500 text-center flex" style="${p.image_url ? 'display:none;' : ''}">Rasm<br>yo'q</div>
+        </td>
+        <td class="px-4 py-3 font-semibold align-middle">${esc(p.name)}</td>
+        <td class="px-4 py-3 text-right text-emerald-400 align-middle">${fmt(p.price)}</td>
+        <td class="px-4 py-3 text-right text-slate-400 align-middle">${fmt(p.cost_price)}</td>
+        <td class="px-4 py-3 text-right align-middle">
           <span class="text-xs px-2 py-0.5 rounded-md ${p.stock > 5 ? 'bg-emerald-900/40 text-emerald-400' : p.stock > 0 ? 'bg-amber-900/40 text-amber-400' : 'bg-red-900/40 text-red-400'}">${p.stock}</span>
         </td>
-        <td class="px-4 py-3 text-slate-500 text-xs">${p.barcode || '—'}</td>
-        <td class="px-4 py-3 text-center space-x-2">
+        <td class="px-4 py-3 text-slate-500 text-xs align-middle">${p.barcode || '—'}</td>
+        <td class="px-4 py-3 text-center space-x-2 align-middle">
           <button onclick='editProduct(${JSON.stringify(p)})' class="text-brand-400 hover:text-brand-300 text-xs font-bold transition-colors">✏️</button>
           <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-400 text-xs font-bold transition-colors">🗑️</button>
         </td>
       </tr>
     `).join('');
+    populateUsageProductDropdown();
   }
 
   /* ------------------------------------------------------------------ */
   /*  ADMIN – DASHBOARD                                                 */
   /* ------------------------------------------------------------------ */
   async function loadDashboard() {
-    const d = await api('/api/dashboard');
-    $('statTodayRev').textContent = fmt(d.today_revenue);
-    $('statTodayProf').textContent = fmt(d.today_profit);
-    $('statMonthRev').textContent = fmt(d.month_revenue);
-    $('statMonthProf').textContent = fmt(d.month_profit);
+    const d = await api('/api/reports/stats');
+    if ($('statTodayTotalRev')) $('statTodayTotalRev').textContent = fmt(d.today_total_revenue);
+    if ($('statMonthTotalRev')) $('statMonthTotalRev').textContent = fmt(d.month_total_revenue);
+    if ($('statTodayCashTreasury')) $('statTodayCashTreasury').textContent = fmt(d.today_cash_treasury);
+    if ($('statTodayCardRevenue')) $('statTodayCardRevenue').textContent = fmt(d.today_card_revenue);
+    if ($('statMonthNetProfit')) $('statMonthNetProfit').textContent = fmt(d.month_net_profit);
     // re-trigger animation
     document.querySelectorAll('.pulse-once').forEach(el => {
       el.classList.remove('pulse-once');
@@ -530,17 +1986,67 @@
   async function loadInsights() {
     const container = $('insightsContainer');
     try {
-      const data = await api('/api/reports/insights');
+      const data = await api(`/api/reports/insights?lang=${currentLang}`);
       let html = '';
+
+      const labels = {
+        uz: {
+          lowStockTitle: "⚠️ TUGAB BARAYOTGAN MAHSULOTLAR",
+          lowStockBadge: "Kam Qoldiq",
+          lowStockEmpty: "✅ Barcha mahsulotlar zaxirasi yetarli!",
+          bestSellersTitle: "🔥 TOP SOTILAYOTGAN MAHSULOTLAR",
+          bestSellersBadge: "Best Seller",
+          slowMoversTitle: "📉 SOTILISHI SUST MAHSULOTLAR",
+          slowMoversBadge: "Sotuv Sust",
+          deadStockTitle: "📦 SOTILMAYOTGAN MAHSULOTLAR (30 KUN)",
+          deadStockBadge: "Harakatsiz",
+          unitDona: "dona",
+          unitOmborda: "dona omborda",
+          noData: "Ma'lumotlar mavjud emas",
+          error: "Yuklashda xatolik yuz berdi"
+        },
+        ru: {
+          lowStockTitle: "⚠️ ЗАКАНЧИВАЮЩИЕСЯ ТОВАРЫ",
+          lowStockBadge: "Мало остатка",
+          lowStockEmpty: "✅ Запас всех товаров достаточен!",
+          bestSellersTitle: "🔥 ЛУЧШИЕ ПРОДАЖИ",
+          bestSellersBadge: "Хит продаж",
+          slowMoversTitle: "📉 МЕДЛЕННОПРОДАЮЩИЕСЯ ТОВАРЫ",
+          slowMoversBadge: "Слабый спрос",
+          deadStockTitle: "📦 НЕПРОДАЮЩИЕСЯ ТОВАРЫ (30 ДНЕЙ)",
+          deadStockBadge: "Неликвид",
+          unitDona: "шт",
+          unitOmborda: "шт на складе",
+          noData: "Данные отсутствуют",
+          error: "Ошибка при загрузке"
+        },
+        en: {
+          lowStockTitle: "⚠️ RUNNING OUT OF STOCK",
+          lowStockBadge: "Low Stock",
+          lowStockEmpty: "✅ All products have sufficient stock!",
+          bestSellersTitle: "🔥 TOP SELLING PRODUCTS",
+          bestSellersBadge: "Best Seller",
+          slowMoversTitle: "📉 SLOW SELLING PRODUCTS",
+          slowMoversBadge: "Slow Mover",
+          deadStockTitle: "📦 UNSOLD PRODUCTS (30 DAYS)",
+          deadStockBadge: "Dead Stock",
+          unitDona: "pcs",
+          unitOmborda: "pcs in stock",
+          noData: "No data available",
+          error: "Error loading insights"
+        }
+      };
+
+      const t = labels[currentLang] || labels['uz'];
 
       // A) Low stock
       if (data.low_stock.items.length > 0) {
-        const listStr = data.low_stock.items.map(i => `${esc(i.name)} (${i.stock} dona)`).join(', ');
+        const listStr = data.low_stock.items.map(i => `${esc(i.name)} (${i.stock} ${t.unitDona})`).join(', ');
         html += `
-          <div class="bg-red-950/35 border border-red-500/20 rounded-xl p-4 space-y-2 fade-in">
+          <div class="bg-red-950/35 border border-red-500/20 rounded-xl p-4 space-y-2 fade-in insight-card insight-card-red cursor-pointer">
             <div class="flex items-center justify-between text-red-400 font-bold text-xs">
-              <span>⚠️ TUGAB BARAYOTGAN MAHSULOTLAR</span>
-              <span class="bg-red-500/20 px-2 py-0.5 rounded text-[10px]">Kam Qoldiq</span>
+              <span>${t.lowStockTitle}</span>
+              <span class="bg-red-500/20 px-2 py-0.5 rounded text-[10px]">${t.lowStockBadge}</span>
             </div>
             <div class="text-sm text-slate-300 font-medium">${listStr}</div>
             <blockquote class="text-xs text-red-300/80 border-l-2 border-red-500/60 pl-2 mt-2 italic">
@@ -551,19 +2057,19 @@
       } else {
         html += `
           <div class="bg-emerald-950/20 border border-emerald-500/10 rounded-xl p-4 text-center text-xs text-emerald-400 font-medium fade-in">
-            ✅ Barcha mahsulotlar zaxirasi yetarli!
+            ${t.lowStockEmpty}
           </div>
         `;
       }
 
       // B) Best Sellers
       if (data.best_sellers.items.length > 0) {
-        const listStr = data.best_sellers.items.map(i => `${esc(i.name)} (${i.quantity_sold} dona)`).join(', ');
+        const listStr = data.best_sellers.items.map(i => `${esc(i.name)} (${i.quantity_sold} ${t.unitDona})`).join(', ');
         html += `
-          <div class="bg-emerald-950/35 border border-emerald-500/20 rounded-xl p-4 space-y-2 fade-in">
+          <div class="bg-emerald-950/35 border border-emerald-500/20 rounded-xl p-4 space-y-2 fade-in insight-card insight-card-green cursor-pointer">
             <div class="flex items-center justify-between text-emerald-400 font-bold text-xs">
-              <span>🔥 TOP SOTILAYOTGAN MAHSULOTLAR</span>
-              <span class="bg-emerald-500/20 px-2 py-0.5 rounded text-[10px]">Best Seller</span>
+              <span>${t.bestSellersTitle}</span>
+              <span class="bg-emerald-500/20 px-2 py-0.5 rounded text-[10px]">${t.bestSellersBadge}</span>
             </div>
             <div class="text-sm text-slate-300 font-medium">${listStr}</div>
             <blockquote class="text-xs text-emerald-300/80 border-l-2 border-emerald-500/60 pl-2 mt-2 italic">
@@ -575,12 +2081,12 @@
 
       // C) Slow Movers
       if (data.slow_movers.items.length > 0) {
-        const listStr = data.slow_movers.items.map(i => `${esc(i.name)} (${i.quantity_sold} dona)`).join(', ');
+        const listStr = data.slow_movers.items.map(i => `${esc(i.name)} (${i.quantity_sold} ${t.unitDona})`).join(', ');
         html += `
-          <div class="bg-amber-950/35 border border-amber-500/20 rounded-xl p-4 space-y-2 fade-in">
+          <div class="bg-amber-950/35 border border-amber-500/20 rounded-xl p-4 space-y-2 fade-in insight-card insight-card-amber cursor-pointer">
             <div class="flex items-center justify-between text-amber-400 font-bold text-xs">
-              <span>📉 SUG'URILAYOTGAN MAHSULOTLAR</span>
-              <span class="bg-amber-500/20 px-2 py-0.5 rounded text-[10px]">Sotuv Sust</span>
+              <span>${t.slowMoversTitle}</span>
+              <span class="bg-amber-500/20 px-2 py-0.5 rounded text-[10px]">${t.slowMoversBadge}</span>
             </div>
             <div class="text-sm text-slate-300 font-medium">${listStr}</div>
             <blockquote class="text-xs text-amber-300/80 border-l-2 border-amber-500/60 pl-2 mt-2 italic">
@@ -592,12 +2098,12 @@
 
       // D) Dead Stock
       if (data.dead_stock.items.length > 0) {
-        const listStr = data.dead_stock.items.map(i => `${esc(i.name)} (${i.stock} dona omborda)`).join(', ');
+        const listStr = data.dead_stock.items.map(i => `${esc(i.name)} (${i.stock} ${t.unitOmborda})`).join(', ');
         html += `
-          <div class="bg-slate-900/60 border border-slate-700/40 rounded-xl p-4 space-y-2 fade-in">
+          <div class="bg-slate-900/60 border border-slate-700/40 rounded-xl p-4 space-y-2 fade-in insight-card insight-card-slate cursor-pointer">
             <div class="flex items-center justify-between text-slate-400 font-bold text-xs">
-              <span>📦 SOTILMAYOTGAN MAHSULOTLAR (30 KUN)</span>
-              <span class="bg-slate-800 px-2 py-0.5 rounded text-[10px] text-slate-400">Harakatsiz</span>
+              <span>${t.deadStockTitle}</span>
+              <span class="bg-slate-800 px-2 py-0.5 rounded text-[10px] text-slate-400">${t.deadStockBadge}</span>
             </div>
             <div class="text-sm text-slate-300 font-medium">${listStr}</div>
             <blockquote class="text-xs text-slate-400 border-l-2 border-slate-500/60 pl-2 mt-2 italic">
@@ -607,9 +2113,10 @@
         `;
       }
 
-      container.innerHTML = html || `<div class="text-center py-8 text-slate-500 text-xs">Ma'lumotlar mavjud emas</div>`;
+      container.innerHTML = html || `<div class="text-center py-8 text-slate-500 text-xs">${t.noData}</div>`;
     } catch (e) {
-      container.innerHTML = `<div class="text-center text-red-400 py-8 text-xs">Yuklashda xatolik yuz berdi</div>`;
+      const errorMsg = (labels[currentLang] || labels['uz']).error;
+      container.innerHTML = `<div class="text-center text-red-400 py-8 text-xs">${errorMsg}</div>`;
     }
   }
 
@@ -632,6 +2139,7 @@
     $('modalTitle').textContent = 'Yangi mahsulot';
     $('pf_id').value = '';
     $('productForm').reset();
+    $('pf_image').value = '';
     $('productModal').classList.remove('hidden');
   }
 
@@ -643,6 +2151,7 @@
     $('pf_cost').value = p.cost_price;
     $('pf_stock').value = p.stock;
     $('pf_barcode').value = p.barcode || '';
+    $('pf_image').value = p.image_url || '';
     $('productModal').classList.remove('hidden');
   }
 
@@ -658,6 +2167,7 @@
       cost_price: parseFloat($('pf_cost').value),
       stock: parseInt($('pf_stock').value) || 0,
       barcode: $('pf_barcode').value.trim() || null,
+      image_url: $('pf_image').value.trim() || null,
     };
     const id = $('pf_id').value;
     if (id) body.id = parseInt(id);
@@ -698,8 +2208,9 @@
   }
 
   function renderCalendarHeader() {
-    const monthNames = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
-    $('calendarMonthYear').textContent = `${monthNames[currentMonth - 1]}, ${currentYear}`;
+    const dict = tDict[currentLang] || tDict['uz'];
+    const monthName = dict[`month_${currentMonth}`] || '';
+    $('calendarMonthYear').textContent = `${monthName}, ${currentYear}`;
   }
 
   async function loadCalendarData() {
@@ -712,27 +2223,39 @@
     firstDay = firstDay === 0 ? 6 : firstDay - 1; // Make Monday = 0
     
     for (let i = 0; i < firstDay; i++) {
-      grid.innerHTML += `<div class="p-2 border border-transparent"></div>`;
+      grid.innerHTML += `<div class="p-1 sm:p-2 border border-transparent"></div>`;
     }
+    
+    const dict = tDict[currentLang] || tDict['uz'];
+    const profitLabel = dict['rep_profit'] || 'Foyda';
     
     for (let i = 1; i <= daysInMonth; i++) {
       const dateStr = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
       const dayData = data[dateStr];
       
-      let content = `<div class="font-bold text-slate-300">${i}</div>`;
+      let content = `<div class="font-bold text-slate-300 text-xs sm:text-sm">${i}</div>`;
       let cursor = 'cursor-default';
       let hover = '';
       let click = '';
       
-      if (dayData && (dayData.sales > 0 || dayData.profit > 0)) {
-        content += `<div class="text-[10px] text-emerald-400 font-bold mt-1">+${fmt(dayData.sales).replace(' soʻm', '')}</div>`;
-        content += `<div class="text-[9px] text-sky-400 font-semibold mt-0.5">Foyda: ${fmt(dayData.profit).replace(' soʻm', '')}</div>`;
+      if (dayData && (dayData.sales > 0 || dayData.profit > 0 || dayData.expenses > 0)) {
+        content += `<div class="hidden sm:block text-[10px] text-emerald-400 font-bold mt-1" title="Kassa Qoldig'i">💰 ${fmt(dayData.revenue).replace(' soʻm', '')}</div>`;
+        if (dayData.expenses > 0) {
+            content += `<div class="hidden sm:block text-[9px] text-red-400 font-semibold mt-0.5" title="Chiqim">📉 -${fmt(dayData.expenses).replace(' soʻm', '')}</div>`;
+        }
+        content += `<div class="hidden sm:block text-[9px] text-sky-400 font-semibold mt-0.5" title="${profitLabel}">📈 ${fmt(dayData.profit).replace(' soʻm', '')}</div>`;
+        
+        content += `<div class="block sm:hidden flex justify-center gap-1 mt-1.5">`;
+        if (dayData.revenue > 0) content += `<div class="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50"></div>`;
+        if (dayData.expenses > 0) content += `<div class="w-1.5 h-1.5 rounded-full bg-red-400 shadow-lg shadow-red-500/50"></div>`;
+        content += `</div>`;
+
         cursor = 'cursor-pointer';
         hover = 'hover:bg-slate-800 transition-colors';
         click = `onclick="openDailySales('${dateStr}')"`;
       }
       
-      grid.innerHTML += `<div ${click} class="p-2 border border-slate-700/40 rounded-xl bg-surface min-h-[80px] flex flex-col ${cursor} ${hover}">${content}</div>`;
+      grid.innerHTML += `<div ${click} class="p-1 sm:p-2 border border-slate-700/40 rounded-xl bg-surface min-h-[44px] sm:min-h-[80px] flex flex-col justify-between sm:justify-start ${cursor} ${hover}">${content}</div>`;
     }
   }
 
@@ -743,27 +2266,905 @@
     $('dailySalesModal').classList.add('hidden');
   }
 
+  let currentActiveDate = '';
+
   async function openDailySales(dateStr) {
-    $('dailySalesTitle').textContent = `${dateStr} kungi sotuvlar`;
-    const sales = await api(`/api/sales?date=${dateStr}`);
-    const el = $('dailySalesBody');
-    if (!sales.length) {
-      el.innerHTML = `<tr><td colspan="4" class="text-center text-slate-500 py-8">Bu kunda sotuv bo'lmagan</td></tr>`;
+    currentActiveDate = dateStr;
+    $('dailySalesTitle').textContent = `${dateStr} kungi sotuvlar va chiqimlar`;
+    
+    // Fetch sales, expenses and owner usages for the day
+    const [sales, expenses, ownerUsages, debts] = await Promise.all([
+      api(`/api/sales?date=${dateStr}`),
+      api(`/api/expenses?date=${dateStr}`),
+      api(`/api/owner-usages?date=${dateStr}`),
+      api(`/api/debts?date=${dateStr}`)
+    ]);
+
+    // 1. Render Sales
+    const salesEl = $('dailySalesBody');
+    if (!sales.length && !debts.length) {
+      salesEl.innerHTML = `<tr><td colspan="6" class="text-center text-slate-500 py-8">Bu kunda sotuv yoki qarz bo'lmagan</td></tr>`;
     } else {
-      el.innerHTML = sales.map((s) => {
+      const rowsHtml = [];
+      sales.forEach(s => {
         const time = new Date(s.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
-        const itemsHtml = s.items.map(i => `${i.quantity} x ${esc(i.product_name)}`).join('<br>');
-        return `
+        let payIcon = '💵';
+        let payLabel = 'Naqd';
+        if (s.payment_type === 'karta') {
+          payIcon = '💳';
+          payLabel = 'Karta';
+        } else if (s.payment_type === 'aralash') {
+          payIcon = '💵+💳';
+          payLabel = `Aralash (Naqd: ${fmt(s.cash_amount || 0).replace(' soʻm', '')}, Karta: ${fmt(s.card_amount || 0).replace(' soʻm', '')})`;
+        }
+        if (s.items.length === 0) {
+          rowsHtml.push(`
+            <tr class="hover:bg-slate-800/40 transition-colors">
+              <td class="px-4 py-3 text-slate-400 font-medium align-middle">
+                <div>${time} <span class="ml-1 text-[11px]" title="${payLabel}">${payIcon}</span></div>
+                ${s.note ? `<div class="text-[10px] text-brand-400 mt-1 leading-tight">${esc(s.note)}</div>` : ''}
+              </td>
+              <td class="px-4 py-3 text-slate-500 text-sm align-middle italic">Mahsulotlar o'chirilgan</td>
+              <td class="px-4 py-3 text-right text-slate-500 text-sm align-middle">—</td>
+              <td class="px-4 py-3 text-right text-slate-500 text-xs align-middle">—</td>
+              <td class="px-4 py-3 text-right text-emerald-400 font-semibold text-sm align-middle">${fmt(s.total_amount)}</td>
+              <td class="px-4 py-3 text-center space-x-2 align-middle">
+                <button onclick="deleteSale(${s.id})" class="text-red-500 hover:text-red-400 text-xs font-bold transition-colors">❌ O'chirish</button>
+              </td>
+            </tr>
+          `);
+        } else {
+          s.items.forEach(i => {
+            rowsHtml.push(`
+              <tr id="row-item-${i.item_id}" class="hover:bg-slate-800/40 transition-colors">
+                <td class="px-4 py-3 text-slate-400 font-medium align-middle">
+                  <div>${time} <span class="ml-1 text-[11px]" title="${payLabel}">${payIcon}</span></div>
+                  ${s.note ? `<div class="text-[10px] text-brand-400 mt-1 leading-tight">${esc(s.note)}</div>` : ''}
+                </td>
+                <td class="px-4 py-3 text-slate-300 text-sm align-middle">${esc(i.product_name)}</td>
+                <td class="px-4 py-3 text-right text-slate-300 text-sm align-middle" id="qty-val-${i.item_id}">${i.quantity}</td>
+                <td class="px-4 py-3 text-right text-slate-400 text-xs align-middle">${fmt(i.price)}</td>
+                <td class="px-4 py-3 text-right text-emerald-400 font-semibold text-sm align-middle">${fmt(i.price * i.quantity)}</td>
+                <td class="px-4 py-3 text-center space-x-2 align-middle" id="actions-${i.item_id}">
+                  <button onclick="startEditItem(${i.item_id}, ${i.quantity})" class="text-brand-400 hover:text-brand-300 text-xs font-bold transition-colors">✏️ Tahrirlash</button>
+                  <button onclick="deleteSaleItem(${i.item_id})" class="text-red-500 hover:text-red-400 text-xs font-bold transition-colors">❌ O'chirish</button>
+                </td>
+              </tr>
+            `);
+          });
+        }
+      });
+
+      debts.forEach(d => {
+        const time = new Date(d.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+        rowsHtml.push(`
           <tr class="hover:bg-slate-800/40 transition-colors">
-            <td class="px-4 py-3 text-slate-400 font-medium align-top">${time}</td>
-            <td class="px-4 py-3 text-slate-300 text-xs leading-relaxed">${itemsHtml}</td>
-            <td class="px-4 py-3 text-right text-emerald-400 font-semibold align-top">${fmt(s.total_amount)}</td>
-            <td class="px-4 py-3 text-right text-sky-400 font-semibold align-top">${fmt(s.profit)}</td>
+            <td class="px-4 py-3 text-slate-400 font-medium align-middle">
+              <div>${time} <span class="ml-1 text-[11px]" title="Nasiyaga berildi">⏳</span></div>
+              <div class="text-[10px] text-amber-400 mt-1 leading-tight">Qarzga berildi (${esc(d.customer_name)})</div>
+            </td>
+            <td class="px-4 py-3 text-slate-300 text-sm align-middle">${esc(d.product_name)}</td>
+            <td class="px-4 py-3 text-right text-slate-300 text-sm align-middle">${d.quantity}</td>
+            <td class="px-4 py-3 text-right text-slate-400 text-xs align-middle">${fmt(d.debt_amount / (d.quantity || 1))}</td>
+            <td class="px-4 py-3 text-right text-amber-400 font-semibold text-sm align-middle">${fmt(d.debt_amount)}</td>
+            <td class="px-4 py-3 text-center space-x-2 align-middle">
+               ${d.status === "to'landi" ? 
+                 `<span class="text-emerald-500 text-xs font-bold bg-emerald-900/40 px-2 py-1 rounded">To'langan qarz</span>` : 
+                 `<button onclick="openEditDebtModal(${d.id}, '${esc(d.customer_name)}', ${d.product_id}, ${d.quantity}, ${d.debt_amount})" class="text-brand-400 hover:text-brand-300 text-xs font-bold transition-colors">✏️ Tahrirlash</button>`}
+            </td>
+          </tr>
+        `);
+      });
+      salesEl.innerHTML = rowsHtml.join('');
+    }
+
+    // 2. Render Expenses
+    const expensesEl = $('dailyExpensesBody');
+    let expensesTotal = 0;
+    if (!expenses.length) {
+      expensesEl.innerHTML = `<tr><td colspan="3" class="text-center text-slate-500 py-4 text-xs">Ushbu kunda chiqim bo'lmagan</td></tr>`;
+    } else {
+      expensesEl.innerHTML = expenses.map(e => {
+        const time = new Date(e.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+        expensesTotal += e.amount;
+        const badge = e.expense_type === 'karta' 
+          ? `<span class="px-1 py-0.2 rounded text-[8px] bg-blue-500/10 text-blue-400 border border-blue-500/20 whitespace-nowrap">Karta</span>`
+          : `<span class="px-1 py-0.2 rounded text-[8px] bg-green-500/10 text-emerald-400 border border-green-500/20 whitespace-nowrap">Naqd</span>`;
+        return `
+          <tr class="hover:bg-slate-800/40 transition-colors text-xs">
+            <td class="px-4 py-2 text-slate-400 font-medium">${time}</td>
+            <td class="px-4 py-2 text-slate-300">
+              <div class="flex items-center gap-1.5">
+                <span class="truncate">${esc(e.title)}</span>
+                ${badge}
+              </div>
+            </td>
+            <td class="px-4 py-2 text-right text-red-400 font-bold">${fmt(e.amount)}</td>
           </tr>
         `;
       }).join('');
     }
+    $('dailyExpensesTotal').textContent = fmt(expensesTotal);
+
+    // 2.5 Render Owner Usages
+    const ownerUsagesEl = $('dailyOwnerUsagesBody');
+    let ownerUsagesTotal = 0;
+    if (!ownerUsages || !ownerUsages.length) {
+      $('dailyOwnerUsagesPart').classList.add('hidden');
+      ownerUsagesEl.innerHTML = '';
+    } else {
+      $('dailyOwnerUsagesPart').classList.remove('hidden');
+      ownerUsagesEl.innerHTML = ownerUsages.map(ou => {
+        const time = new Date(ou.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+        ownerUsagesTotal += ou.total_cost_price;
+        return `
+          <tr class="hover:bg-slate-800/40 transition-colors text-xs">
+            <td class="px-4 py-2 text-slate-400 font-medium">${time}</td>
+            <td class="px-4 py-2 text-slate-300">${esc(ou.product_name)}</td>
+            <td class="px-4 py-2 text-right text-slate-300">${ou.quantity}</td>
+            <td class="px-4 py-2 text-right text-sky-400 font-bold">${fmt(ou.total_cost_price)}</td>
+          </tr>
+        `;
+      }).join('');
+      $('dailyOwnerUsagesTotal').textContent = fmt(ownerUsagesTotal);
+    }
+
+    // 3. Compute Summary
+    let totalSales = 0;
+    let totalProfit = 0;
+    let cashSales = 0;
+    let cardSales = 0;
+    sales.forEach(s => {
+      totalSales += s.total_amount || 0;
+      totalProfit += s.profit || 0;
+      cashSales += s.cash_amount || 0;
+      cardSales += s.card_amount || 0;
+    });
+    debts.forEach(d => {
+      totalProfit += d.profit || 0;
+    });
+
+    totalProfit -= ownerUsagesTotal;
+    
+    if ($('dailySummarySales')) $('dailySummarySales').textContent = fmt(totalSales);
+    if ($('dailySummaryExpenses')) $('dailySummaryExpenses').textContent = fmt(expensesTotal);
+    if ($('dailySummaryRevenue')) $('dailySummaryRevenue').textContent = fmt(cashSales - expensesTotal);
+    if ($('dailySummaryCard')) $('dailySummaryCard').textContent = fmt(cardSales);
+    if ($('dailySummaryProfit')) $('dailySummaryProfit').textContent = fmt(totalProfit);
+
     $('dailySalesModal').classList.remove('hidden');
+  }
+
+  function startEditItem(itemId, currentQty) {
+    const qtyCell = $(`qty-val-${itemId}`);
+    const actionsCell = $(`actions-${itemId}`);
+    qtyCell.innerHTML = `<input type="number" id="input-qty-${itemId}" value="${currentQty}" min="1" class="w-16 bg-surface border border-slate-600 rounded px-2 py-0.5 text-right text-sm text-slate-100 outline-none" />`;
+    actionsCell.innerHTML = `
+      <button onclick="saveEditItem(${itemId})" class="text-emerald-400 hover:text-emerald-300 text-xs font-bold transition-colors">✅ Saqlash</button>
+      <button onclick="openDailySales(currentActiveDate)" class="text-slate-400 hover:text-slate-300 text-xs font-bold transition-colors">Bekor</button>
+    `;
+  }
+
+  async function saveEditItem(itemId) {
+    const newQty = parseInt($(`input-qty-${itemId}`).value);
+    if (!newQty || newQty <= 0) {
+      toast('Miqdor musbat butun son boʻlishi kerak', 'error');
+      return;
+    }
+    try {
+      await api(`/api/sales/items/${itemId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: newQty })
+      });
+      toast('Sotuv miqdori yangilandi');
+      await openDailySales(currentActiveDate);
+      if ($('adminView').classList.contains('hidden') === false) {
+        loadAdminProducts();
+        loadDashboard();
+        loadInsights();
+      }
+      if ($('reportsView').classList.contains('hidden') === false) {
+        loadCalendarData();
+      }
+    } catch (e) {}
+  }
+
+  async function deleteSaleItem(itemId) {
+    if (!confirm('Ushbu sotilgan mahsulotni roʻyxatdan butunlay oʻchirmoqchimisiz? (Mahsulot omborga qaytariladi)')) return;
+    try {
+      await api(`/api/sales/items/${itemId}`, { method: 'DELETE' });
+      toast('Sotilgan mahsulot oʻchirildi');
+      await openDailySales(currentActiveDate);
+      if ($('adminView').classList.contains('hidden') === false) {
+        loadAdminProducts();
+        loadDashboard();
+        loadInsights();
+      }
+      if ($('reportsView').classList.contains('hidden') === false) {
+        loadCalendarData();
+      }
+    } catch (e) {}
+  }
+
+  async function deleteSale(saleId) {
+    if (!confirm('Ushbu sotuv yozuvini butunlay oʻchirmoqchimisiz?')) return;
+    try {
+      await api(`/api/sales/${saleId}`, { method: 'DELETE' });
+      toast('Sotuv yozuvi oʻchirildi');
+      await openDailySales(currentActiveDate);
+      if ($('adminView').classList.contains('hidden') === false) {
+        loadDashboard();
+        loadInsights();
+      }
+      if ($('reportsView').classList.contains('hidden') === false) {
+        loadCalendarData();
+      }
+    } catch (e) {}
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  EXPENSES                                                          */
+  /* ------------------------------------------------------------------ */
+  let currentExpenseType = 'naqd';
+  function setExpenseType(type) {
+    currentExpenseType = type;
+    if (type === 'naqd') {
+      $('exp_type_naqd_btn').className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-brand-600 text-white shadow transition-colors';
+      $('exp_type_karta_btn').className = 'px-2 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-slate-200 transition-colors';
+    } else {
+      $('exp_type_karta_btn').className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-brand-600 text-white shadow transition-colors';
+      $('exp_type_naqd_btn').className = 'px-2 py-0.5 rounded text-[10px] font-bold text-slate-400 hover:text-slate-200 transition-colors';
+    }
+  }
+
+  let currentEditExpenseType = 'naqd';
+  function setEditExpenseType(type) {
+    currentEditExpenseType = type;
+    if (type === 'naqd') {
+      $('edit_exp_type_naqd_btn').className = 'py-2 rounded-xl text-sm font-bold bg-brand-600 text-white shadow transition-colors flex items-center justify-center gap-1';
+      $('edit_exp_type_karta_btn').className = 'py-2 rounded-xl text-sm font-bold text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1';
+    } else {
+      $('edit_exp_type_karta_btn').className = 'py-2 rounded-xl text-sm font-bold bg-brand-600 text-white shadow transition-colors flex items-center justify-center gap-1';
+      $('edit_exp_type_naqd_btn').className = 'py-2 rounded-xl text-sm font-bold text-slate-400 hover:text-slate-200 transition-colors flex items-center justify-center gap-1';
+    }
+  }
+
+  async function loadExpenses() {
+    try {
+      const expenses = await api('/api/expenses');
+      const el = $('expenseListBody');
+      if (!expenses.length) {
+        el.innerHTML = '<tr><td colspan="4" class="text-center text-slate-500 py-6 text-xs">Chiqimlar hali kiritilmagan</td></tr>';
+        return;
+      }
+      el.innerHTML = expenses.map(e => {
+        const d = new Date(e.created_at);
+        const timeStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        const badge = e.expense_type === 'karta' 
+          ? `<span class="px-1 py-0.2 rounded text-[8px] bg-blue-500/10 text-blue-400 border border-blue-500/20 whitespace-nowrap">Karta</span>`
+          : `<span class="px-1 py-0.2 rounded text-[8px] bg-green-500/10 text-emerald-400 border border-green-500/20 whitespace-nowrap">Naqd</span>`;
+        return `
+          <tr class="hover:bg-slate-800/40 transition-colors">
+            <td class="px-2 py-1.5 text-slate-400 font-medium whitespace-nowrap">${timeStr}</td>
+            <td class="px-2 py-1.5 text-slate-200 font-semibold truncate" style="max-width:120px;" title="${esc(e.title)}">
+              <div class="flex items-center gap-1.5">
+                <span class="truncate">${esc(e.title)}</span>
+                ${badge}
+              </div>
+            </td>
+            <td class="px-2 py-1.5 text-right text-red-400 font-bold whitespace-nowrap">${fmt(e.amount)}</td>
+            <td class="px-2 py-1.5 text-center">
+              <button onclick="openEditExpenseModal(${e.id}, '${esc(e.title).replace(/'/g, "\\'")}', ${e.amount}, '${e.created_at}', '${e.expense_type}')" title="Tahrirlash" class="text-brand-500 hover:text-brand-400 transition-colors">✏️</button>
+              <button onclick="openReturnModal(${e.id})" title="Yukni qaytarish" class="text-sky-500 hover:text-sky-400 transition-colors ml-1">🔄</button>
+              <button onclick="deleteExpense(${e.id})" title="O'chirish" class="text-red-500 hover:text-red-400 transition-colors ml-1">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    } catch (e) {}
+  }
+
+  async function saveExpense(e) {
+    e.preventDefault();
+    const title = $('exp_title').value.trim();
+    const amount = parseFloat($('exp_amount').value);
+    const created_at = $('exp_date').value || null;
+    const expense_type = currentExpenseType;
+    if (!title || !amount) return;
+    try {
+      await api('/api/expenses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, amount, created_at, expense_type })
+      });
+      toast('Chiqim muvaffaqiyatli saqlandi');
+      $('exp_title').value = '';
+      $('exp_amount').value = '';
+      setExpenseType('naqd');
+      setExpenseTime();
+      loadExpenses();
+      loadDashboard();
+      if ($('reportsView').classList.contains('hidden') === false) {
+        loadCalendarData();
+      }
+    } catch (e) {}
+  }
+
+  async function deleteExpense(id) {
+    if (!confirm('Ushbu chiqimni oʻchirmoqchimisiz?')) return;
+    try {
+      await api(`/api/expenses/${id}`, { method: 'DELETE' });
+      toast('Chiqim oʻchirildi');
+      loadExpenses();
+      loadDashboard();
+      if ($('reportsView').classList.contains('hidden') === false) {
+        loadCalendarData();
+      }
+    } catch (e) {}
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  OWNER USAGES                                                      */
+  /* ------------------------------------------------------------------ */
+  async function loadOwnerUsages() {
+    try {
+      const usages = await api('/api/owner-usages');
+      const el = $('ownerUsageListBody');
+      if (!usages.length) {
+        el.innerHTML = '<tr><td colspan="4" class="text-center text-slate-500 py-6 text-xs">Oʻzim olganlarim kiritilmagan</td></tr>';
+        return;
+      }
+      el.innerHTML = usages.map(u => {
+        const d = new Date(u.created_at);
+        const timeStr = `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        return `
+          <tr class="hover:bg-slate-800/40 transition-colors">
+            <td class="px-2 py-1.5 text-slate-400 font-medium whitespace-nowrap">${timeStr}</td>
+            <td class="px-2 py-1.5 text-slate-200 font-semibold truncate" style="max-width:90px;" title="${esc(u.product_name)}">${esc(u.product_name)} x${u.quantity}</td>
+            <td class="px-2 py-1.5 text-right text-sky-400 font-bold whitespace-nowrap">${fmt(u.total_cost_price)}</td>
+            <td class="px-2 py-1.5 text-center">
+              <button onclick="openEditOwnerUsageModal(${u.id}, ${u.product_id}, ${u.quantity})" title="Tahrirlash" class="text-brand-500 hover:text-brand-400 transition-colors">✏️</button>
+              <button onclick="deleteOwnerUsage(${u.id})" title="O'chirish" class="text-red-500 hover:text-red-400 transition-colors ml-1">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    } catch (e) {}
+  }
+
+  async function saveOwnerUsage(e) {
+    e.preventDefault();
+    const product_id = parseInt($('usage_product_id').value);
+    const quantity = parseInt($('usage_quantity').value);
+    if (!product_id || !quantity || quantity <= 0) {
+      toast('Mahsulot va miqdorni toʻgʻri kiriting', 'error');
+      return;
+    }
+    try {
+      await api('/api/owner-usages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id, quantity })
+      });
+      toast('Oʻzim olgan mahsulot saqlandi');
+      $('usage_product_id').value = '';
+      $('usage_quantity').value = '';
+      
+      loadOwnerUsages();
+      loadAdminProducts();
+      loadDashboard();
+      loadInsights();
+      if ($('reportsView').classList.contains('hidden') === false) {
+        loadCalendarData();
+      }
+    } catch (e) {}
+  }
+
+  async function deleteOwnerUsage(id) {
+    if (!confirm('Ushbu yozuvni oʻchirmoqchimisiz? (Mahsulot omborga qaytariladi)')) return;
+    try {
+      await api(`/api/owner-usages/${id}`, { method: 'DELETE' });
+      toast('Yozuv oʻchirildi');
+      loadOwnerUsages();
+      loadAdminProducts();
+      loadDashboard();
+      loadInsights();
+      if ($('reportsView').classList.contains('hidden') === false) {
+        loadCalendarData();
+      }
+    } catch (e) {}
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  EDIT OWNER USAGE                                                  */
+  /* ------------------------------------------------------------------ */
+  function openEditOwnerUsageModal(id, productId, quantity) {
+    $('edit_ou_id').value = id;
+    
+    // Populate dropdown selection
+    const dropdown = $('edit_ou_product_id');
+    if (dropdown) {
+      const sorted = [...allProducts].sort((a, b) => a.name.localeCompare(b.name));
+      const dict = tDict[currentLang] || tDict['uz'];
+      const prompt = dict['usage_product_ph'] || '-- Mahsulotni tanlang * --';
+      dropdown.innerHTML = `<option value="">${prompt}</option>` + sorted.map(p => {
+        return `<option value="${p.id}">${esc(p.name)} (Qoldiq: ${p.stock})</option>`;
+      }).join('');
+      dropdown.value = productId;
+    }
+    
+    $('edit_ou_quantity').value = quantity;
+    $('editOwnerUsageModal').classList.remove('hidden');
+  }
+
+  function closeEditOwnerUsageModal() {
+    $('editOwnerUsageModal').classList.add('hidden');
+  }
+
+  async function submitEditOwnerUsage(e) {
+    e.preventDefault();
+    const id = parseInt($('edit_ou_id').value);
+    const product_id = parseInt($('edit_ou_product_id').value);
+    const new_quantity = parseInt($('edit_ou_quantity').value);
+    if (!id || !product_id || !new_quantity || new_quantity <= 0) {
+      toast('Tahrirlash maʼlumotlari toʻgʻri boʻlishi kerak', 'error');
+      return;
+    }
+    try {
+      await api(`/api/owner-usages/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id, new_quantity })
+      });
+      toast('Muvaffaqiyatli yangilandi');
+      closeEditOwnerUsageModal();
+      loadOwnerUsages();
+      loadAdminProducts();
+      loadDashboard();
+      loadInsights();
+      if ($('reportsView').classList.contains('hidden') === false) {
+        loadCalendarData();
+      }
+    } catch (e) {}
+  }
+
+  function populateUsageProductDropdown() {
+    const sorted = [...allProducts].sort((a, b) => a.name.localeCompare(b.name));
+    const dict = tDict[currentLang] || tDict['uz'];
+
+    const dropdownUsage = $('usage_product_id');
+    if (dropdownUsage) {
+      const currentSelected = dropdownUsage.value;
+      const prompt = dict['usage_product_ph'] || '-- Mahsulotni tanlang * --';
+      dropdownUsage.innerHTML = `<option value="">${prompt}</option>` + sorted.map(p => {
+        return `<option value="${p.id}">${esc(p.name)} (Qoldiq: ${p.stock})</option>`;
+      }).join('');
+      if (currentSelected) dropdownUsage.value = currentSelected;
+    }
+
+    const dropdownDebt = $('debt_product_id');
+    if (dropdownDebt) {
+      const currentSelectedDebt = dropdownDebt.value;
+      dropdownDebt.innerHTML = `<option value="">-- Mahsulotni tanlang * --</option>` + sorted.map(p => {
+        return `<option value="${p.id}">${esc(p.name)} (Qoldiq: ${p.stock}, Narx: ${fmt(p.price)})</option>`;
+      }).join('');
+      if (currentSelectedDebt) dropdownDebt.value = currentSelectedDebt;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  EDIT EXPENSE                                                      */
+  /* ------------------------------------------------------------------ */
+  function openEditExpenseModal(id, title, amount, createdAt, expenseType) {
+    $('edit_exp_id').value = id;
+    $('edit_exp_title').value = title;
+    $('edit_exp_amount').value = amount;
+    
+    // format date for datetime-local input
+    const d = new Date(createdAt);
+    const pad = (n) => String(n).padStart(2, '0');
+    $('edit_exp_date').value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    
+    setEditExpenseType(expenseType || 'naqd');
+    
+    $('editExpenseModal').classList.remove('hidden');
+  }
+
+  function closeEditExpenseModal() {
+    $('editExpenseModal').classList.add('hidden');
+  }
+
+  async function submitEditExpense(e) {
+    e.preventDefault();
+    const id = parseInt($('edit_exp_id').value);
+    const title = $('edit_exp_title').value.trim();
+    const amount = parseFloat($('edit_exp_amount').value);
+    const created_at = $('edit_exp_date').value;
+    const expense_type = currentEditExpenseType;
+
+    try {
+      await api(`/api/expenses/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, amount, created_at, expense_type })
+      });
+      toast('Chiqim yangilandi');
+      closeEditExpenseModal();
+      loadExpenses();
+      loadDashboard();
+      if (!$('reportsView').classList.contains('hidden')) {
+        loadCalendarData();
+      }
+    } catch (err) {}
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  SUPPLIER RETURNS & EXCHANGE                                       */
+  /* ------------------------------------------------------------------ */
+  function switchReturnTab(tab) {
+    if (tab === 'money') {
+      $('returnForm').classList.remove('hidden');
+      $('exchangeForm').classList.add('hidden');
+      $('tabReturnMoneyBtn').className = 'flex-1 py-1.5 rounded-lg text-sm font-bold bg-slate-700 text-white shadow-sm transition-colors';
+      $('tabExchangeBtn').className = 'flex-1 py-1.5 rounded-lg text-sm font-bold text-slate-400 hover:text-slate-200 transition-colors';
+    } else {
+      $('returnForm').classList.add('hidden');
+      $('exchangeForm').classList.remove('hidden');
+      $('tabExchangeBtn').className = 'flex-1 py-1.5 rounded-lg text-sm font-bold bg-slate-700 text-white shadow-sm transition-colors';
+      $('tabReturnMoneyBtn').className = 'flex-1 py-1.5 rounded-lg text-sm font-bold text-slate-400 hover:text-slate-200 transition-colors';
+    }
+  }
+
+  function openReturnModal(expenseId) {
+    $('ret_expense_id').value = expenseId;
+    $('exc_expense_id').value = expenseId;
+    $('returnForm').reset();
+    $('exchangeForm').reset();
+    switchReturnTab('money');
+    
+    const options = '<option value="">-- Tanlang --</option>' + allProducts.map(p => `<option value="${p.id}">${esc(p.name)} (Qoldiq: ${p.stock})</option>`).join('');
+    $('ret_product_id').innerHTML = options;
+    $('exc_ret_product_id').innerHTML = options;
+    $('exc_new_product_id').innerHTML = options;
+    
+    $('returnModal').classList.remove('hidden');
+  }
+  
+  function closeReturnModal() {
+    $('returnModal').classList.add('hidden');
+  }
+  
+  async function submitReturn(e) {
+    e.preventDefault();
+    const expense_id = parseInt($('ret_expense_id').value);
+    const product_id = parseInt($('ret_product_id').value);
+    const quantity = parseInt($('ret_quantity').value);
+    const refund_amount = parseFloat($('ret_refund').value);
+    
+    try {
+      await api('/api/expenses/return', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expense_id, product_id, quantity, refund_amount })
+      });
+      toast('Yuk qaytarildi va ombor yangilandi');
+      closeReturnModal();
+      loadExpenses();
+      loadDashboard();
+      loadAdminProducts();
+      if (!$('reportsView').classList.contains('hidden')) {
+        loadCalendarData();
+      }
+    } catch (err) {}
+  }
+
+  async function submitExchange(e) {
+    e.preventDefault();
+    const expense_id = parseInt($('exc_expense_id').value);
+    const returned_product_id = parseInt($('exc_ret_product_id').value);
+    const returned_qty = parseInt($('exc_ret_quantity').value);
+    const new_product_id = parseInt($('exc_new_product_id').value);
+    const new_qty = parseInt($('exc_new_quantity').value);
+    const additional_payment = parseFloat($('exc_additional_payment').value) || 0;
+    
+    try {
+      await api('/api/expenses/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expense_id, returned_product_id, returned_qty, new_product_id, new_qty, additional_payment })
+      });
+      toast('Mahsulotlar almashtirildi');
+      closeReturnModal();
+      loadExpenses();
+      loadDashboard();
+      loadAdminProducts();
+      if (!$('reportsView').classList.contains('hidden')) {
+        loadCalendarData();
+      }
+    } catch (err) {}
+  }
+
+  function setExpenseTime() {
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const formatted = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    const el = $('exp_date');
+    if (el) {
+      el.value = formatted;
+      el.max = formatted;
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  CARD TO CASH TRANSFER                                             */
+  /* ------------------------------------------------------------------ */
+  function openTransferModal() {
+    $('transfer_amount').value = '';
+    $('transfer_description').value = '';
+    $('transferModal').classList.remove('hidden');
+  }
+
+  function closeTransferModal() {
+    $('transferModal').classList.add('hidden');
+  }
+
+  async function submitTransfer(e) {
+    e.preventDefault();
+    const amount = parseFloat($('transfer_amount').value);
+    const description = $('transfer_description').value.trim();
+
+    if (isNaN(amount) || amount <= 0) {
+      toast("Summa noldan katta bo'lishi kerak!", 'error');
+      return;
+    }
+
+    try {
+      await api('/api/transfers/card-to-cash', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description })
+      });
+      
+      toast("Mablag' muvaffaqiyatli ko'chirildi!");
+      closeTransferModal();
+      
+      // Update metrics dynamically
+      await loadDashboard();
+      
+      // If reports calendar view is currently open/visible, reload it too
+      if (!$('reportsView').classList.contains('hidden')) {
+        loadCalendarData();
+      }
+    } catch (err) {
+      console.error(err);
+      toast(err.detail || 'Xatolik yuz berdi', 'error');
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  CASH TO CARD TRANSFER                                             */
+  /* ------------------------------------------------------------------ */
+  function openCashToCardModal() {
+    $('transfer_c2c_amount').value = '';
+    $('transfer_c2c_description').value = '';
+    $('transferCashToCardModal').classList.remove('hidden');
+  }
+
+  function closeCashToCardModal() {
+    $('transferCashToCardModal').classList.add('hidden');
+  }
+
+  async function submitCashToCardTransfer(e) {
+    e.preventDefault();
+    const amount = parseFloat($('transfer_c2c_amount').value);
+    const description = $('transfer_c2c_description').value.trim();
+
+    if (isNaN(amount) || amount <= 0) {
+      toast("Summa noldan katta bo'lishi kerak!", 'error');
+      return;
+    }
+
+    try {
+      await api('/api/transfers/cash-to-card', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, description })
+      });
+      
+      toast("Mablag' muvaffaqiyatli ko'chirildi!");
+      closeCashToCardModal();
+      
+      // Update metrics dynamically
+      await loadDashboard();
+      
+      // If reports calendar view is currently open/visible, reload it too
+      if (!$('reportsView').classList.contains('hidden')) {
+        loadCalendarData();
+      }
+    } catch (err) {
+      console.error(err);
+      toast(err.detail || 'Xatolik yuz berdi', 'error');
+    }
+  }
+
+  /* ------------------------------------------------------------------ */
+  /*  DEBTS (NASIYA)                                                    */
+  /* ------------------------------------------------------------------ */
+  async function loadDebts() {
+    try {
+      const debts = await api('/api/debts');
+      const tbody = $('debtListBody');
+      if (!debts.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-slate-500 py-4">Qarzlar yo'q</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = debts.map(d => {
+        const isPaid = d.status === "to'landi";
+        const dateStr = new Date(d.created_at).toLocaleString();
+        const actionHtml = isPaid ? '' : `
+          <button onclick="openEditDebtModal(${d.id}, '${esc(d.customer_name)}', ${d.product_id}, ${d.quantity}, ${d.debt_amount})" class="text-brand-400 hover:text-brand-300 font-bold transition-colors">✏️</button>
+          <button onclick="openPayDebtModal(${d.id}, ${d.debt_amount})" class="text-emerald-400 hover:text-emerald-300 font-bold transition-colors ml-1">✅</button>
+        `;
+        return `
+          <tr class="hover:bg-slate-800/40 transition-colors">
+            <td class="px-2 py-2">
+              <div class="font-bold text-slate-200">${esc(d.customer_name)}</div>
+              <div class="text-[10px] text-slate-500">${dateStr}</div>
+            </td>
+            <td class="px-2 py-2 text-slate-300">${esc(d.product_name)} <br> <span class="text-[10px] text-slate-500">${d.quantity} ta</span></td>
+            <td class="px-2 py-2 text-right font-bold text-slate-200">${fmt(d.debt_amount)}</td>
+            <td class="px-2 py-2 text-center">
+              <span class="text-[10px] px-1.5 py-0.5 rounded ${isPaid ? 'bg-emerald-900/40 text-emerald-400' : 'bg-rose-900/40 text-rose-400'}">${isPaid ? "To'landi" : "To'lanmagan"}</span>
+            </td>
+            <td class="px-2 py-2 text-center text-xs align-middle">
+              ${actionHtml}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    } catch (e) {
+      console.error('loadDebts', e);
+    }
+  }
+
+  async function saveDebt(e) {
+    e.preventDefault();
+    const pid = parseInt($('debt_product_id').value);
+    const qty = parseInt($('debt_quantity').value);
+    const amt = parseFloat($('debt_amount').value);
+    const cname = $('debt_customer_name').value.trim();
+    if (!pid || isNaN(qty) || isNaN(amt) || !cname) return toast("Barcha maydonlarni to'ldiring", "error");
+
+    const p = allProducts.find(x => x.id === pid);
+    if (!p) return toast("Mahsulot topilmadi", "error");
+    if (p.stock < qty) return toast("Omborda yetarli mahsulot yo'q", "error");
+
+    try {
+      await api('/api/debts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_name: cname,
+          product_id: pid,
+          quantity: qty,
+          debt_amount: amt
+        })
+      });
+      toast("Qarz saqlandi");
+      e.target.reset();
+      $('debt_quantity').value = 1;
+      loadAdminProducts(); 
+      loadDebts();
+      loadDashboard();
+    } catch (err) {
+      toast(err.message || "Xatolik", "error");
+    }
+  }
+
+  function openEditDebtModal(id, customer_name, product_id, quantity, amount) {
+    $('edit_debt_id').value = id;
+    $('edit_debt_customer_name').value = customer_name;
+    $('edit_debt_product_id').value = product_id;
+    $('edit_debt_quantity').value = quantity;
+    $('edit_debt_amount').value = amount;
+    $('editDebtModal').classList.remove('hidden');
+  }
+
+  function closeEditDebtModal() {
+    $('editDebtModal').classList.add('hidden');
+  }
+
+  async function saveEditDebt(e) {
+    e.preventDefault();
+    const id = $('edit_debt_id').value;
+    const customer_name = $('edit_debt_customer_name').value.trim();
+    const product_id = parseInt($('edit_debt_product_id').value);
+    const quantity = parseInt($('edit_debt_quantity').value);
+    const debt_amount = parseFloat($('edit_debt_amount').value);
+
+    try {
+      await api('/api/debts/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_name, product_id, quantity, debt_amount
+        })
+      });
+      toast("Qarz tahrirlandi");
+      closeEditDebtModal();
+      loadAdminProducts();
+      loadDebts();
+      loadDashboard();
+      if (!$('dailySalesModal').classList.contains('hidden') && typeof currentActiveDate !== 'undefined') {
+        openDailySales(currentActiveDate);
+      }
+    } catch (err) {
+      toast(err.message || "Xatolik", "error");
+    }
+  }
+
+  function openPayDebtModal(id, amount) {
+    $('pay_debt_id').value = id;
+    $('pay_debt_amount_display').textContent = fmt(amount);
+    setPayDebtType('naqd');
+    $('payDebtModal').classList.remove('hidden');
+  }
+
+  function closePayDebtModal() {
+    $('payDebtModal').classList.add('hidden');
+  }
+
+  function setPayDebtType(type) {
+    $('pay_debt_type').value = type;
+    if (type === 'naqd') {
+      $('pay_debt_naqd_btn').className = "flex-1 py-2 rounded-lg font-bold bg-brand-600 text-white transition-colors border border-brand-500";
+      $('pay_debt_karta_btn').className = "flex-1 py-2 rounded-lg font-bold bg-surface text-slate-300 transition-colors border border-slate-600";
+    } else {
+      $('pay_debt_karta_btn').className = "flex-1 py-2 rounded-lg font-bold bg-brand-600 text-white transition-colors border border-brand-500";
+      $('pay_debt_naqd_btn').className = "flex-1 py-2 rounded-lg font-bold bg-surface text-slate-300 transition-colors border border-slate-600";
+    }
+  }
+
+  async function submitPayDebt(e) {
+    e.preventDefault();
+    const id = $('pay_debt_id').value;
+    const type = $('pay_debt_type').value;
+    
+    try {
+      await api(`/api/debts/${id}/pay`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payment_type: type })
+      });
+      toast("To'lov qabul qilindi");
+      closePayDebtModal();
+      loadDebts();
+      loadDashboard();
+    } catch (err) {
+      toast(err.message || "Xatolik", "error");
+    }
+  }
+
+  // Auto calculate debt amount
+  document.addEventListener('DOMContentLoaded', () => {
+    const debtProdSelect = $('debt_product_id');
+    const debtQtyInput = $('debt_quantity');
+    if (debtProdSelect && debtQtyInput) {
+      debtProdSelect.addEventListener('change', updateDebtAmount);
+      debtQtyInput.addEventListener('input', updateDebtAmount);
+    }
+  });
+
+  function updateDebtAmount() {
+    const pid = parseInt($('debt_product_id').value);
+    const qty = parseInt($('debt_quantity').value) || 0;
+    if (pid && qty > 0) {
+      const p = allProducts.find(x => x.id === pid);
+      if (p) {
+        $('debt_amount').value = p.price * qty;
+      }
+    }
   }
 
   /* ------------------------------------------------------------------ */
@@ -778,8 +3179,12 @@
   }
 
   setCurrentTime();
-  loadProducts();
+  applyLanguage(currentLang);
+  applyZoom(currentZoom);
+  applyTheme(currentTheme);
+  checkAuth();
   renderCart();
   </script>
+  </div>
 </body>
 </html>

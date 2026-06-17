@@ -1,4 +1,12 @@
 __pycache__/
 *.pyc
 backend/app.db
+backend/delta_sells.db
 .env
+logs/
+temp.txt
+update_frontend.py
+update_main_auth.py
+node_modules/
+package-lock.json
+frontend/package-lock.json
