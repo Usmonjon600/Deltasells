@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: deltasells_web
+    restart: always # Server o'chib yonsa avtomatik qayta ishga tushadi
+    ports:
+      - "8000:8000"
+    volumes:
+      # Ma'lumotlar bazasi saqlanib qolishi uchun volume ulaymiz
+      # DIQQAT: Serverda ./backend/app.db fayli oldindan bor bo'lishi kerak
+      - ./backend/app.db:/app/backend/app.db
+      # Loglarni serverda ko'rib turish uchun volume
+      - ./logs:/app/logs
+    env_file:
+      - .env
