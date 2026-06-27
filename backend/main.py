@@ -98,6 +98,15 @@ except Exception as e:
 # --------------- App ---------------
 app = FastAPI(title="Delta Sells – CRM / Kassa")
 
+from fastapi.middleware.cors import CORSMiddleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # --------------- AUTHENTICATION ---------------
 SECRET_KEY = os.getenv("JWT_SECRET", "super-secret-key-delta-sells-2026")
 ALGORITHM = "HS256"
@@ -171,7 +180,8 @@ def register_user(data: UserCreate, db: Session = Depends(get_db)):
 @app.post("/api/auth/login")
 def login(data: UserLogin, db: Session = Depends(get_db)):
     from .models import User
-    user = db.query(User).filter(User.username == data.username).first()
+    username_clean = data.username.strip()
+    user = db.query(User).filter(func.lower(User.username) == username_clean.lower()).first()
     if not user or not verify_password(data.password, user.password_hash):
         raise HTTPException(status_code=400, detail="Login yoki parol noto'g'ri")
     access_token = create_access_token(data={"sub": user.username})

@@ -329,11 +329,7 @@
           </div>
         </div>
 
-        <div class="text-center mt-8">
-          <p class="text-[10px] text-slate-500 font-medium tracking-wide">
-            Demo parollar: <span class="text-cyan-400">12345678</span> (Useradmin) <span class="mx-1 text-slate-700">|</span> <span class="text-emerald-400">0123</span> (PIN)
-          </p>
-        </div>
+
       </div>
 
       <!-- Register View -->
@@ -1750,7 +1746,11 @@
         opts.headers = opts.headers || {};
         opts.headers['Authorization'] = `Bearer ${token}`;
       }
-      const res = await fetch(path, opts);
+      let url = path;
+      if (window.location.protocol === 'file:') {
+        url = 'http://localhost:8001' + path;
+      }
+      const res = await fetch(url, opts);
       if (res.status === 401) {
         logout();
         throw new Error('Sessiya tugadi, qaytadan kiring');
